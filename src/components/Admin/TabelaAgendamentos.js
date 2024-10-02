@@ -13,7 +13,7 @@ const Table = styled.table`
 const Th = styled.th`
   padding: 10px;
   border-bottom: 1px solid #ddd;
-  background-color: #001f3f;
+  background-color: #181444;
   color: white;
 `;
 
@@ -32,9 +32,7 @@ const Row = styled.tr`
 function TabelaAgendamentos() {
     const [agendamentos, setAgendamentos] = useState([]);
 
-    // Simulando chamada a uma API com useEffect e dados mockados
     useEffect(() => {
-        // Simulação de dados mockados
         const mockData = [
             {
                 matricula: '1-22-11111',
@@ -61,8 +59,6 @@ function TabelaAgendamentos() {
                 status: 'Cancelado',
             },
         ];
-
-        // Simulação de atraso da API
         setTimeout(() => {
             setAgendamentos(mockData);
         }, 1000); // Simula um atraso de 1 segundo

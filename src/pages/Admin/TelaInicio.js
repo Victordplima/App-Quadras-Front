@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import CarouselQuadras from '../../components/CarrosselQuadras/CarrosselQuadras';
 import TabelaAgendamentos from '../../components/Admin/TabelaAgendamentos';
+import Header from '../../components/Admin/Header';
 
 const Container = styled.div`
   padding: 20px;
@@ -37,21 +38,22 @@ const DateButton = styled.button`
 const dates = ['09/09 Seg', '10/09 Ter', '11/09 Qua', '12/09 Qui', '13/09 Sex', '14/09 Sáb', '15/09 Dom'];
 
 function TelaInicioAdmin() {
-  return (
-    <Container>
-      <Title>Selecionar Quadra</Title>
-      <CarouselQuadras />
+    return (
+        <Container>
+            <Header />
+            <Title>Selecionar Quadra</Title>
+            <CarouselQuadras />
 
-      <Title>Selecionar Data</Title>
-      <DateCarousel>
-        {dates.map((date, index) => (
-          <DateButton key={index}>{date}</DateButton>
-        ))}
-      </DateCarousel>
+            <Title>Selecionar Data</Title>
+            <DateCarousel>
+                {dates.map((date, index) => (
+                    <DateButton key={index}>{date}</DateButton>
+                ))}
+            </DateCarousel>
 
-      <TabelaAgendamentos />
-    </Container>
-  );
+            <TabelaAgendamentos />
+        </Container>
+    );
 }
 
 export default TelaInicioAdmin;

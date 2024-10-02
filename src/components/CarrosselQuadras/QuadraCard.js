@@ -25,6 +25,7 @@ const QuadraName = styled.p`
   margin-top: 10px;
   font-size: 1.2rem;
   color: white;
+  padding-bottom: 12px;
 
   @media (max-width: 768px) {
     font-size: 1rem;
