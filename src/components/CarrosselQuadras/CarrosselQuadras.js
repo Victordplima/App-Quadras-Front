@@ -40,6 +40,7 @@ const SamplePrevArrow = (props) => {
 const CarouselContainer = styled.div`
   width: 85%;
   margin: 0 auto;
+  margin-top: 20px;
 
   .slick-prev, .slick-next {
   font-size: 15px !important;
