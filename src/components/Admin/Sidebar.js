@@ -27,11 +27,11 @@ const SidebarButton = styled(NavLink)`
   margin: 10px 0;
 
   &:hover {
-    background-color: #3a3e47;
+    background-color: #1e99c0;
   }
 
   &.active {
-    background-color: #555;
+    background-color: #1e99c0;
   }
 `;
 
