@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faCalendarAlt, faFutbol } from '@fortawesome/free-solid-svg-icons';
 
-// Container do histórico
 const HistoricoBox = styled.div`
   margin-top: 30px;
   width: 100%;
@@ -12,7 +11,6 @@ const HistoricoBox = styled.div`
   margin-right: auto;
 `;
 
-// Título do histórico
 const HistoricoTitle = styled.h3`
   color: #333;
   margin-bottom: 20px;
@@ -20,7 +18,6 @@ const HistoricoTitle = styled.h3`
   font-size: 24px;
 `;
 
-// Estilo dos cards
 const Card = styled.div`
   background-color: ${({ status }) => getStatusColor(status)};
   border-radius: 8px;
@@ -33,14 +30,12 @@ const Card = styled.div`
   justify-content: space-between;
 `;
 
-// Container dos cards
 const CardContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
 `;
 
-// Estilo para o status
 const StatusTag = styled.span`
   background-color: ${({ status }) => getStatusTagColor(status)};
   padding: 5px 10px;
@@ -52,7 +47,6 @@ const StatusTag = styled.span`
   align-self: flex-start;
 `;
 
-// Estilo dos filtros
 const FiltroContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -65,7 +59,6 @@ const FiltroSelect = styled.select`
   margin: 0 10px;
 `;
 
-// Estilo para os detalhes do agendamento
 const DetailRow = styled.div`
   display: flex;
   align-items: center;
@@ -77,7 +70,6 @@ const DetailRow = styled.div`
   }
 `;
 
-// Dados de exemplo
 const agendamentosMock = [
     { id: 1, quadra: 'Quadra coberta', horario: '13:00 - 14:00', data: '12/10/2024', esporte: 'Futebol', status: 'Confirmado' },
     { id: 2, quadra: 'Quadra de areia 1', horario: '15:00 - 16:00', data: '12/10/2024', esporte: 'Beach tennis', status: 'Rejeitado' },
