@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import TelaInicioAdmin from './pages/Admin/TelaInicio';
 import Login from './pages/Login';
 import PerfilUsuario from './pages/Admin/PerfilUsuario';
+import TelaOcorrencias from './pages/Admin/TelaOcorrencias';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<TelaInicioAdmin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/perfil" element={<PerfilUsuario />} />
+        <Route path="/ocorrencias" element={<TelaOcorrencias />} />
       </Routes>
     </Router>
   );
