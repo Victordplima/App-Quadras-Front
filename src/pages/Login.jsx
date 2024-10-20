@@ -68,11 +68,13 @@ const Button = styled.button`
   margin-top: 35px;
   margin-bottom: 30px;
   font-size: 18px;
+  transition: background-color 0.3s ease;
 
   &:hover {
     background-color: #007bbd;
   }
 `;
+
 
 const ForgotPassword = styled.a`
   color: white;
@@ -85,18 +87,18 @@ const ForgotPassword = styled.a`
 `;
 
 const Login = () => {
-    return (
-        <Container>
-            <Logo src={logo} alt="Logo Faminas" />
-            <LoginBox>
-                <Title>Agendamento de Quadras</Title>
-                <Input type="text" placeholder="E-mail" />
-                <Input type="password" placeholder="Senha" />
-                <Button>Acessar</Button>
-                <ForgotPassword href="#">Esqueci minha senha</ForgotPassword>
-            </LoginBox>
-        </Container>
-    );
+  return (
+    <Container>
+      <Logo src={logo} alt="Logo Faminas" />
+      <LoginBox>
+        <Title>Agendamento de Quadras</Title>
+        <Input type="text" placeholder="E-mail" />
+        <Input type="password" placeholder="Senha" />
+        <Button>Acessar</Button>
+        <ForgotPassword href="#">Esqueci minha senha</ForgotPassword>
+      </LoginBox>
+    </Container>
+  );
 };
 
 export default Login;

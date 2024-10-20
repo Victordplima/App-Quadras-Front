@@ -25,6 +25,7 @@ const SidebarButton = styled(NavLink)`
   text-decoration: none;
   border-radius: 8px;
   margin: 10px 0;
+  transition: background-color 0.3s ease;
 
   &:hover {
     background-color: #1e99c0;
