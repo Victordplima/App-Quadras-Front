@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faCalendar } from "@fortawesome/free-solid-svg-icons";
@@ -39,36 +39,19 @@ const ButtonText = styled.span`
   margin-left: 10px;
 `;
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
-  const sidebarRef = useRef();
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        toggleSidebar(false); // Fecha a sidebar
-      }
-    };
-
-    // Adiciona o listener de click ao documento
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // Remove o listener ao desmontar
-    };
-  }, [toggleSidebar]);
-
-  return (
-    <SidebarContainer ref={sidebarRef} isOpen={isOpen}>
-      <SidebarButton to="/feed" activeClassName="active">
-        <FontAwesomeIcon icon={faCalendar} size="lg" />
-        <ButtonText>Agendar</ButtonText>
-      </SidebarButton>
-      <SidebarButton to="/gerenciar" activeClassName="active">
-        <FontAwesomeIcon icon={faUser} size="lg" />
-        <ButtonText>Gerenciar usuários</ButtonText>
-      </SidebarButton>
-    </SidebarContainer>
-  );
+const Sidebar = ({ isOpen, sidebarRef }) => {
+    return (
+        <SidebarContainer ref={sidebarRef} isOpen={isOpen}>
+            <SidebarButton to="/feed" activeClassName="active">
+                <FontAwesomeIcon icon={faCalendar} size="lg" />
+                <ButtonText>Agendar</ButtonText>
+            </SidebarButton>
+            <SidebarButton to="/gerenciar" activeClassName="active">
+                <FontAwesomeIcon icon={faUser} size="lg" />
+                <ButtonText>Gerenciar usuários</ButtonText>
+            </SidebarButton>
+        </SidebarContainer>
+    );
 };
 
 export default Sidebar;

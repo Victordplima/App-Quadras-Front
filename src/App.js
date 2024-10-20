@@ -4,6 +4,8 @@ import GlobalStyle from "./GlobalStyle";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+
+import PaginaParaRedirecionamentos from "./pages/PaginaParaRedirecionamentos"; // serve so para ter os botoes para redirecionar nas telas, remover depois
 import TelaInicioAdmin from "./pages/Admin/TelaInicio";
 import Login from "./pages/Login";
 import PerfilUsuario from "./pages/Admin/PerfilUsuario";
@@ -11,18 +13,19 @@ import TelaOcorrencias from "./pages/Admin/TelaOcorrencias";
 import GerenciarUsuario from "./pages/Admin/GerenciarUsuario";
 
 function App() {
-  return (
-    <Router>
-      <GlobalStyle />
-      <Routes>
-        <Route path="/" element={<TelaInicioAdmin />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/perfil" element={<PerfilUsuario />} />
-        <Route path="/ocorrencias" element={<TelaOcorrencias />} />
-        <Route path="/gerenciar" element={<GerenciarUsuario />} />
-      </Routes>
-    </Router>
-  );
+    return (
+        <Router>
+            <GlobalStyle />
+            <Routes>
+                <Route path="/" element={<PaginaParaRedirecionamentos />} />
+                <Route path="/agendamentos" element={<TelaInicioAdmin />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/perfil" element={<PerfilUsuario />} />
+                <Route path="/ocorrencias" element={<TelaOcorrencias />} />
+                <Route path="/gerenciar" element={<GerenciarUsuario />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
