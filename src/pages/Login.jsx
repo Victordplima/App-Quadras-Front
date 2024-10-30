@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import logo from "../assets/Logo 1.png";
 import { z } from "zod";
-import { login as loginRequest } from "../utils/http";
+import { login as loginRequest } from "../api/usuario";
 
 const Container = styled.div`
     display: flex;
