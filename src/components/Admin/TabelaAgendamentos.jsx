@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { buscarReservasSemana, alterarStatusReserva } from "../../api/reserva";
 import { buscarUsuarioPorId } from "../../api/usuario";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TableContainer = styled.div`
     margin-top: 30px;
@@ -66,6 +68,7 @@ const TabelaAgendamentos = ({ quadraId }) => {
                             ...reserva,
                             matricula: usuario.matricula,
                             nomeAluno: usuario.nome,
+                            curso: usuario.curso,
                         };
                     })
                 );
@@ -82,11 +85,18 @@ const TabelaAgendamentos = ({ quadraId }) => {
 
     const handleStatusUpdate = async (reservaId, novoStatus) => {
         try {
-            const resultado = await alterarStatusReserva(reservaId, novoStatus);
-            console.log("Status atualizado com sucesso:", resultado);
-            // Atualize o estado local ou faça outras ações necessárias
+            await alterarStatusReserva(reservaId, novoStatus);
+            setAgendamentos((prevAgendamentos) =>
+                prevAgendamentos.map((agendamento) =>
+                    agendamento.id === reservaId
+                        ? { ...agendamento, status: novoStatus }
+                        : agendamento
+                )
+            );
+            toast.success(`Reserva ${novoStatus} com sucesso!`);
         } catch (error) {
-            console.error("Erro ao atualizar status:", error.message); // Mostra a mensagem de erro
+            console.error("Erro ao atualizar status:", error.message);
+            toast.error("Erro ao atualizar status da reserva.");
         }
     };
 
@@ -97,6 +107,7 @@ const TabelaAgendamentos = ({ quadraId }) => {
                     <tr>
                         <Th>Matrícula</Th>
                         <Th>Nome do Aluno</Th>
+                        <Th>Curso</Th>
                         <Th>Horário de uso</Th>
                         <Th>Data/hora do pedido</Th>
                         <Th>Status</Th>
@@ -109,6 +120,7 @@ const TabelaAgendamentos = ({ quadraId }) => {
                             <Row key={index}>
                                 <Td>{agendamento.matricula}</Td>
                                 <Td>{agendamento.nomeAluno}</Td>
+                                <Td>{agendamento.curso}</Td>{" "}
                                 <Td>{`${formatarDataHora(
                                     agendamento.data,
                                     agendamento.hora_inicio
@@ -156,7 +168,7 @@ const TabelaAgendamentos = ({ quadraId }) => {
                         ))
                     ) : (
                         <Row>
-                            <Td colSpan="6">Nenhum agendamento encontrado.</Td>
+                            <Td colSpan="7">Nenhum agendamento encontrado.</Td>{" "}
                         </Row>
                     )}
                 </tbody>
