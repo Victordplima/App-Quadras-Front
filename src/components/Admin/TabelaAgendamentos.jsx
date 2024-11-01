@@ -1,68 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { buscarReservasSemana, alterarStatusReserva } from "../../api/reserva";
+import { buscarUsuarioPorId } from "../../api/usuario";
+import { format } from "date-fns";
 
 const TableContainer = styled.div`
-  margin-top: 30px;
+    margin-top: 30px;
 `;
 
 const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 `;
 
 const Th = styled.th`
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  background-color: #181444;
-  color: white;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #181444;
+    color: white;
 `;
 
 const Td = styled.td`
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
 `;
 
 const Row = styled.tr`
-  &:hover {
-    background-color: #f1f1f1;
-  }
+    &:hover {
+        background-color: #f1f1f1;
+    }
 `;
 
-function TabelaAgendamentos() {
+const Button = styled.button`
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    border-radius: 4px;
+    background-color: ${({ action }) =>
+        action === "aceitar" ? "#4CAF50" : "#FF5722"};
+`;
+
+const TabelaAgendamentos = ({ quadraId }) => {
     const [agendamentos, setAgendamentos] = useState([]);
 
+    const formatarDataHora = (data, hora) => {
+        return `${format(new Date(data), "dd/MM/yyyy")} ${format(
+            new Date(`1970-01-01T${hora}Z`),
+            "HH:mm"
+        )}`;
+    };
+
     useEffect(() => {
-        const mockData = [
-            {
-                matricula: '1-22-11111',
-                nomeAluno: 'Manoel Gomes',
-                espaco: 'Quadra Fechada',
-                horarioUso: '13:00 - 14:00',
-                dataHoraPedido: '27/08 22:35',
-                status: 'Confirmado',
-            },
-            {
-                matricula: '1-22-11112',
-                nomeAluno: 'João da Silva',
-                espaco: 'Campo de Futebol',
-                horarioUso: '14:00 - 15:00',
-                dataHoraPedido: '27/08 23:00',
-                status: 'Aguardando Confirmação',
-            },
-            {
-                matricula: '1-22-11113',
-                nomeAluno: 'Maria Souza',
-                espaco: 'Quadra Aberta',
-                horarioUso: '15:00 - 16:00',
-                dataHoraPedido: '28/08 09:15',
-                status: 'Cancelado',
-            },
-        ];
-        setTimeout(() => {
-            setAgendamentos(mockData);
-        }, 1000); // Simula um atraso de 1 segundo
-    }, []);
+        const fetchAgendamentos = async () => {
+            try {
+                const reservas = await buscarReservasSemana(quadraId);
+                const reservasComUsuarios = await Promise.all(
+                    reservas.map(async (reserva) => {
+                        const usuario = await buscarUsuarioPorId(
+                            reserva.usuario_id
+                        );
+                        return {
+                            ...reserva,
+                            matricula: usuario.matricula,
+                            nomeAluno: usuario.nome,
+                        };
+                    })
+                );
+                setAgendamentos(reservasComUsuarios);
+            } catch (error) {
+                console.error("Erro ao buscar agendamentos:", error);
+            }
+        };
+
+        if (quadraId) {
+            fetchAgendamentos();
+        }
+    }, [quadraId]);
+
+    const handleStatusUpdate = async (reservaId, novoStatus) => {
+        try {
+            const resultado = await alterarStatusReserva(reservaId, novoStatus);
+            console.log("Status atualizado com sucesso:", resultado);
+            // Atualize o estado local ou faça outras ações necessárias
+        } catch (error) {
+            console.error("Erro ao atualizar status:", error.message); // Mostra a mensagem de erro
+        }
+    };
 
     return (
         <TableContainer>
@@ -71,10 +97,10 @@ function TabelaAgendamentos() {
                     <tr>
                         <Th>Matrícula</Th>
                         <Th>Nome do Aluno</Th>
-                        <Th>Espaço</Th>
                         <Th>Horário de uso</Th>
                         <Th>Data/hora do pedido</Th>
                         <Th>Status</Th>
+                        <Th>Ações</Th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,21 +109,60 @@ function TabelaAgendamentos() {
                             <Row key={index}>
                                 <Td>{agendamento.matricula}</Td>
                                 <Td>{agendamento.nomeAluno}</Td>
-                                <Td>{agendamento.espaco}</Td>
-                                <Td>{agendamento.horarioUso}</Td>
-                                <Td>{agendamento.dataHoraPedido}</Td>
+                                <Td>{`${formatarDataHora(
+                                    agendamento.data,
+                                    agendamento.hora_inicio
+                                )} - ${formatarDataHora(
+                                    agendamento.data,
+                                    agendamento.hora_fim
+                                )}`}</Td>
+                                <Td>
+                                    {formatarDataHora(
+                                        agendamento.data_criacao,
+                                        agendamento.hora_criacao
+                                    )}
+                                </Td>
                                 <Td>{agendamento.status}</Td>
+                                <Td>
+                                    {agendamento.status ===
+                                        "Aguardando confirmação" && (
+                                        <>
+                                            <Button
+                                                action="aceitar"
+                                                onClick={() =>
+                                                    handleStatusUpdate(
+                                                        agendamento.id,
+                                                        "Confirmada"
+                                                    )
+                                                }
+                                            >
+                                                Aceitar
+                                            </Button>
+                                            <Button
+                                                action="recusar"
+                                                onClick={() =>
+                                                    handleStatusUpdate(
+                                                        agendamento.id,
+                                                        "Rejeitada"
+                                                    )
+                                                }
+                                            >
+                                                Recusar
+                                            </Button>
+                                        </>
+                                    )}
+                                </Td>
                             </Row>
                         ))
                     ) : (
                         <Row>
-                            <Td colSpan="6">Carregando agendamentos...</Td>
+                            <Td colSpan="6">Nenhum agendamento encontrado.</Td>
                         </Row>
                     )}
                 </tbody>
             </Table>
         </TableContainer>
     );
-}
+};
 
 export default TabelaAgendamentos;
