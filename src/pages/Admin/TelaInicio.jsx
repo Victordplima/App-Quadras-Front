@@ -24,7 +24,7 @@ function TelaInicioAdmin() {
             <Header />
             <Title>Selecionar Quadra</Title>
             <CarouselQuadras onQuadraSelect={setQuadraId} />
-            <TabelaHorarios />
+            {quadraId && <TabelaHorarios quadraId={quadraId} />}
             <TabelaAgendamentos quadraId={quadraId} />
         </Container>
     );
