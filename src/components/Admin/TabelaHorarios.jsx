@@ -22,13 +22,12 @@ const CelulaTabela = styled.td`
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
-    background-color: ${({ $ocupada }) =>
-        $ocupada ? "#28a745" : "white"}; // Verde para ocupada
-    cursor: default; // Remover o cursor de clique
+    background-color: ${({ $ocupada }) => ($ocupada ? "#28a745" : "white")};
+    cursor: default;
 
     &:hover {
         background-color: ${({ $ocupada }) =>
-            $ocupada ? "#218838" : "#f3f3f3"}; // Escurecer ao passar o mouse
+            $ocupada ? "#218838" : "#f3f3f3"};
     }
 `;
 
@@ -82,20 +81,18 @@ const TabelaHorarios = ({ quadraId }) => {
             if (!quadraId) return;
 
             try {
-                console.log("Buscando reservas para a quadra:", quadraId);
                 const reservas = await buscarReservasSemana(quadraId);
-                console.log("Reservas recebidas:", reservas);
-
                 const reservasConfirmadas = reservas.filter(
                     (reserva) => reserva.status === "Confirmada"
                 );
-                console.log("Reservas confirmadas:", reservasConfirmadas);
 
-                const usuariosPromises = reservasConfirmadas.map((reserva) =>
-                    buscarUsuarioPorId(reserva.usuario_id).then((usuario) => ({
-                        ...reserva,
-                        nomeUsuario: usuario.nome,
-                    }))
+                const usuariosPromises = reservasConfirmadas.map(
+                    async (reserva) => {
+                        const usuario = await buscarUsuarioPorId(
+                            reserva.usuario_id
+                        );
+                        return { ...reserva, nomeUsuario: usuario.nome };
+                    }
                 );
 
                 const reservasComUsuarios = await Promise.all(usuariosPromises);
@@ -106,17 +103,13 @@ const TabelaHorarios = ({ quadraId }) => {
                         const chave = `${dia}-${reserva.hora_inicio.slice(
                             0,
                             5
-                        )}`; // Garantir a mesma formatação
+                        )}`;
                         acc[chave] = reserva.nomeUsuario;
                         return acc;
                     },
                     {}
                 );
 
-                console.log(
-                    "Horários reservados finais:",
-                    novosHorariosReservados
-                );
                 setHorariosReservados(novosHorariosReservados);
             } catch (error) {
                 console.error("Erro ao buscar reservas:", error);
@@ -175,13 +168,9 @@ const TabelaHorarios = ({ quadraId }) => {
                     <tr key={horario}>
                         <CelulaHora>{horario}</CelulaHora>
                         {diasDaSemana.map((dia) => {
-                            const chave = `${dia}-${horario}`; // A mesma formatação aqui
+                            const chave = `${dia}-${horario}`;
                             const nomeUsuario = horariosReservados[chave];
                             const ocupada = !!nomeUsuario;
-
-                            console.log(
-                                `Chave: ${chave}, Nome: ${nomeUsuario}, Ocupada: ${ocupada}`
-                            ); // Debug
 
                             return (
                                 <CelulaTabela key={chave} $ocupada={ocupada}>

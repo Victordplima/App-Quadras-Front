@@ -18,14 +18,23 @@ const Title = styled.h1`
 
 function TelaInicioAdmin() {
     const [quadraId, setQuadraId] = useState(null);
+    const [agendamentos, setAgendamentos] = useState([]);
 
     return (
         <Container>
             <Header />
             <Title>Selecionar Quadra</Title>
             <CarouselQuadras onQuadraSelect={setQuadraId} />
-            {quadraId && <TabelaHorarios quadraId={quadraId} />}
-            <TabelaAgendamentos quadraId={quadraId} />
+            {quadraId && (
+                <TabelaHorarios
+                    quadraId={quadraId}
+                    agendamentos={agendamentos}
+                />
+            )}
+            <TabelaAgendamentos
+                quadraId={quadraId}
+                setAgendamentos={setAgendamentos}
+            />
         </Container>
     );
 }

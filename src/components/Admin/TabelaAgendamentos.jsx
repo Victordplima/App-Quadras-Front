@@ -45,8 +45,8 @@ const Button = styled.button`
         action === "aceitar" ? "#4CAF50" : "#FF5722"};
 `;
 
-const TabelaAgendamentos = ({ quadraId }) => {
-    const [agendamentos, setAgendamentos] = useState([]);
+const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
+    const [agendamentos, setAgendamentosLocal] = useState([]);
 
     const formatarDataHora = (data, hora) => {
         return `${format(new Date(data), "dd/MM/yyyy")} ${format(
@@ -72,7 +72,8 @@ const TabelaAgendamentos = ({ quadraId }) => {
                         };
                     })
                 );
-                setAgendamentos(reservasComUsuarios);
+                setAgendamentosLocal(reservasComUsuarios);
+                setAgendamentos(reservasComUsuarios); // Atualiza o estado do pai com os agendamentos
             } catch (error) {
                 console.error("Erro ao buscar agendamentos:", error);
             }
@@ -81,18 +82,32 @@ const TabelaAgendamentos = ({ quadraId }) => {
         if (quadraId) {
             fetchAgendamentos();
         }
-    }, [quadraId]);
+    }, [quadraId, setAgendamentos]); // Adicione setAgendamentos aqui
 
     const handleStatusUpdate = async (reservaId, novoStatus) => {
         try {
             await alterarStatusReserva(reservaId, novoStatus);
-            setAgendamentos((prevAgendamentos) =>
+            setAgendamentosLocal((prevAgendamentos) =>
                 prevAgendamentos.map((agendamento) =>
                     agendamento.id === reservaId
                         ? { ...agendamento, status: novoStatus }
                         : agendamento
                 )
             );
+
+            if (novoStatus === "Confirmada") {
+                const agendamentoConfirmado = agendamentos.find(
+                    (a) => a.id === reservaId
+                );
+                setAgendamentos((prevAgendamentos) =>
+                    prevAgendamentos.map((agendamento) =>
+                        agendamento.id === agendamentoConfirmado.id
+                            ? agendamentoConfirmado
+                            : agendamento
+                    )
+                );
+            }
+
             toast.success(`Reserva ${novoStatus} com sucesso!`);
         } catch (error) {
             console.error("Erro ao atualizar status:", error.message);
@@ -116,11 +131,11 @@ const TabelaAgendamentos = ({ quadraId }) => {
                 </thead>
                 <tbody>
                     {agendamentos.length > 0 ? (
-                        agendamentos.map((agendamento, index) => (
-                            <Row key={index}>
+                        agendamentos.map((agendamento) => (
+                            <Row key={agendamento.id}>
                                 <Td>{agendamento.matricula}</Td>
                                 <Td>{agendamento.nomeAluno}</Td>
-                                <Td>{agendamento.curso}</Td>{" "}
+                                <Td>{agendamento.curso}</Td>
                                 <Td>{`${formatarDataHora(
                                     agendamento.data,
                                     agendamento.hora_inicio
@@ -168,7 +183,7 @@ const TabelaAgendamentos = ({ quadraId }) => {
                         ))
                     ) : (
                         <Row>
-                            <Td colSpan="7">Nenhum agendamento encontrado.</Td>{" "}
+                            <Td colSpan="7">Nenhum agendamento encontrado.</Td>
                         </Row>
                     )}
                 </tbody>
