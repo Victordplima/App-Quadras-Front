@@ -68,3 +68,22 @@ export const buscarUsuarioPorId = async (id) => {
         throw error;
     }
 };
+
+export const buscarUsuarios = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    try {
+        const response = await api.get(`/usuarios`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response;
+    } catch (error) {
+        throw new Error("Erro ao buscar usuários");
+    }
+};
