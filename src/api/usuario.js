@@ -87,3 +87,50 @@ export const buscarUsuarios = async () => {
         throw new Error("Erro ao buscar usuários");
     }
 };
+
+export const removerUsuario = async (id) => {
+    const token = localStorage.getItem("token");
+    const response = await api.delete(`/usuarios/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response;
+};
+
+export const editarUsuario = async (id, dados) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    try {
+        const response = await api.put(`/usuarios/${id}`, dados, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            if (error.response.status === 404) {
+                toast.error("Usuário não encontrado.");
+            } else if (error.response.status === 400) {
+                toast.error(
+                    "Dados inválidos. Verifique as informações e tente novamente."
+                );
+            } else {
+                toast.error(
+                    error.response.data?.message || "Erro ao editar usuário."
+                );
+            }
+        } else {
+            toast.error(
+                "Erro na conexão com o servidor. Tente novamente mais tarde."
+            );
+        }
+        throw new Error(
+            error.response?.data?.message || "Erro ao editar usuário"
+        );
+    }
+};

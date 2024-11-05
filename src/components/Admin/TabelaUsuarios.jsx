@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { buscarUsuarios } from "../../api/usuario";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ModalEditarUsuario from "./ModalEditarUsuario";
 
 const TabelaWrapper = styled.div`
     padding: 20px;
@@ -94,95 +95,90 @@ const BotaoEditar = styled.button`
 
 const TabelaUsuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
-    const [filtroUsuarios, setFiltroUsuarios] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [sortOrder, setSortOrder] = useState("asc");
+    const [search, setSearch] = useState("");
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+
     const navigate = useNavigate();
 
+    const loadUsuarios = async () => {
+        try {
+            const response = await buscarUsuarios();
+            setUsuarios(response.data);
+        } catch (error) {
+            toast.error("Erro ao buscar usuários.");
+        }
+    };
+
     useEffect(() => {
-        const fetchUsuarios = async () => {
-            try {
-                const response = await buscarUsuarios();
-                setUsuarios(response.data);
-                setFiltroUsuarios(response.data);
-            } catch (error) {
-                toast.error("Erro ao carregar usuários.");
-            }
-        };
-        fetchUsuarios();
+        loadUsuarios();
     }, []);
 
-    const handleUserClick = (id) => {
-        navigate(`/perfil/${id}`);
+    const handleOpenModal = (usuario) => {
+        setUsuarioSelecionado(usuario);
+        setModalOpen(true);
     };
 
-    const handleEditClick = (id) => {
-        navigate(`/editar-usuario/${id}`);
+    const handleCloseModal = () => {
+        setModalOpen(false);
     };
 
-    const handleSearch = (e) => {
-        const term = e.target.value.toLowerCase();
-        setSearchTerm(term);
-        const filtered = usuarios.filter((usuario) =>
-            usuario.nome.toLowerCase().includes(term)
-        );
-        setFiltroUsuarios(filtered);
+    const handleUsuarioAtualizado = () => {
+        loadUsuarios();
+        handleCloseModal();
     };
 
-    const toggleSortOrder = () => {
-        const newOrder = sortOrder === "asc" ? "desc" : "asc";
-        setSortOrder(newOrder);
-
-        const sorted = [...filtroUsuarios].sort((a, b) => {
-            if (newOrder === "asc") {
-                return a.nome.localeCompare(b.nome);
-            } else {
-                return b.nome.localeCompare(a.nome);
-            }
-        });
-
-        setFiltroUsuarios(sorted);
-    };
+    const filteredUsuarios = usuarios.filter((usuario) =>
+        usuario.nome.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <TabelaWrapper>
-            <ToastContainer />
             <FiltroWrapper>
                 <BarraPesquisa
                     type="text"
                     placeholder="Pesquisar por nome..."
-                    value={searchTerm}
-                    onChange={handleSearch}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
-                <BotaoOrdenar onClick={toggleSortOrder}>
-                    Ordenar por Nome (
-                    {sortOrder === "asc" ? "Crescente" : "Decrescente"})
+                <BotaoOrdenar
+                    onClick={() =>
+                        setUsuarios(
+                            [...usuarios].sort((a, b) =>
+                                a.nome.localeCompare(b.nome)
+                            )
+                        )
+                    }
+                >
+                    Ordenar
                 </BotaoOrdenar>
             </FiltroWrapper>
             <Tabela>
                 <TabelaHead>
                     <TabelaRow>
                         <TabelaHeaderCell>Nome</TabelaHeaderCell>
-                        <TabelaHeaderCell>Curso</TabelaHeaderCell>
-                        <TabelaHeaderCell>Matrícula</TabelaHeaderCell>
+                        <TabelaHeaderCell>Email</TabelaHeaderCell>
+                        <TabelaHeaderCell>Telefone</TabelaHeaderCell>
                         <TabelaHeaderCell>Ações</TabelaHeaderCell>
                     </TabelaRow>
                 </TabelaHead>
                 <tbody>
-                    {filtroUsuarios.map((usuario) => (
+                    {filteredUsuarios.map((usuario) => (
                         <TabelaRow key={usuario.id}>
                             <TabelaCell>
                                 <LinkNomeUsuario
-                                    onClick={() => handleUserClick(usuario.id)}
+                                    onClick={() =>
+                                        navigate(`/perfil/${usuario.id}`)
+                                    }
                                 >
                                     {usuario.nome}
                                 </LinkNomeUsuario>
                             </TabelaCell>
-                            <TabelaCell>{usuario.curso}</TabelaCell>
-                            <TabelaCell>{usuario.matricula}</TabelaCell>
+                            <TabelaCell>{usuario.email}</TabelaCell>
+                            <TabelaCell>{usuario.telefone}</TabelaCell>
                             <TabelaCell>
                                 <BotaoEditar
-                                    onClick={() => handleEditClick(usuario.id)}
+                                    onClick={() => handleOpenModal(usuario)}
                                 >
                                     Editar
                                 </BotaoEditar>
@@ -191,6 +187,13 @@ const TabelaUsuarios = () => {
                     ))}
                 </tbody>
             </Tabela>
+            <ToastContainer />
+            <ModalEditarUsuario
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                usuario={usuarioSelecionado}
+                onUsuarioAtualizado={handleUsuarioAtualizado}
+            />
         </TabelaWrapper>
     );
 };
