@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { editarUsuario, removerUsuario } from "../../api/usuario";
 
