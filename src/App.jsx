@@ -23,9 +23,9 @@ function App() {
                 <Route path="/" element={<PaginaParaRedirecionamentos />} /> {/* Remover depois */}
                 <Route path="/agendamentos" element={<TelaInicioAdmin />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/perfil" element={<PerfilUsuario />} />
                 <Route path="/ocorrencias" element={<TelaOcorrencias />} />
                 <Route path="/gerenciar" element={<GerenciarUsuario />} />
+                <Route path="/perfil/:userId" element={<PerfilUsuario />} />
             </Routes>
         </Router>
     );

@@ -134,3 +134,22 @@ export const editarUsuario = async (id, dados) => {
         );
     }
 };
+
+export const buscarHistoricoDoUsuario = async (userId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    try {
+        const response = await api.get(`/usuarios/${userId}/historico`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar histórico do usuário:", error);
+        throw error;
+    }
+};
