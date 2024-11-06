@@ -43,7 +43,7 @@ const ButtonText = styled.span`
 const Sidebar = ({ isOpen, sidebarRef }) => {
     return (
         <SidebarContainer ref={sidebarRef} isOpen={isOpen}>
-            <SidebarButton to="/feed" activeClassName="active">
+            <SidebarButton to="/agendamentos" activeClassName="active">
                 <FontAwesomeIcon icon={faCalendar} size="lg" />
                 <ButtonText>Agendar</ButtonText>
             </SidebarButton>
