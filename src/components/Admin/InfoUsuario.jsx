@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,8 +7,9 @@ import {
     faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
-import EditModal from "./EditModal"; // Assumindo que os modais estão em arquivos separados
+import EditModal from "./EditModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
+import { buscarUsuarioPorId } from "../../api/usuario";
 
 const Container = styled.div`
     display: flex;
@@ -104,15 +105,27 @@ const MenuItem = styled.div`
     }
 `;
 
-const InfoUsuario = () => {
+const InfoUsuario = ({ userId }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [formData, setFormData] = useState({
-        nome: "João da Silva",
-        email: "joao.silva@example.com",
-        telefone: "(31) 98765-4321",
-    });
+    const [userData, setUserData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const data = await buscarUsuarioPorId(userId);
+                setUserData(data);
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [userId]);
 
     const toggleOptions = () => setShowOptions(!showOptions);
     const closeModals = () => {
@@ -120,16 +133,9 @@ const InfoUsuario = () => {
         setShowDeleteModal(false);
     };
 
-    const userData = {
-        nome: "João da Silva",
-        email: "joao.silva@example.com",
-        telefone: "(31) 98765-4321",
-        matricula: "2021100001",
-        totalAgendamentos: 15,
-        totalCancelamentos: 3,
-        totalRejeitamentos: 2,
-        totalOcorrencias: 1,
-    };
+    if (isLoading) {
+        return <p>Carregando...</p>;
+    }
 
     return (
         <Container>
@@ -143,6 +149,12 @@ const InfoUsuario = () => {
                     </InfoItem>
                     <InfoItem>
                         <span>Telefone:</span> {userData.telefone}
+                    </InfoItem>
+                    <InfoItem>
+                        <span>Matrícula:</span> {userData.matricula}
+                    </InfoItem>
+                    <InfoItem>
+                        <span>Curso:</span> {userData.curso}
                     </InfoItem>
                     <InfoItem>
                         <span>Matrícula:</span> {userData.matricula}
@@ -185,16 +197,14 @@ const InfoUsuario = () => {
                 </Card>
             </TotalsCard>
 
-            {/* Modal de Edição */}
             {showEditModal && (
                 <EditModal
-                    formData={formData}
-                    setFormData={setFormData}
+                    formData={userData}
+                    setFormData={setUserData}
                     handleCloseModal={closeModals}
                 />
             )}
 
-            {/* Modal de Exclusão */}
             {showDeleteModal && (
                 <DeleteConfirmModal
                     userData={userData}
