@@ -34,6 +34,9 @@ const PaginaParaRedirecionamentos = () => {
             <NavigationLink to="/ocorrencias">Ocorrências</NavigationLink>
             <NavigationLink to="/gerenciar">Gerenciar Usuários</NavigationLink>
             <NavigationLink to="/agendamentos">Agendamentos</NavigationLink>
+
+            {/* alunos e atléticas */}
+            <NavigationLink to="/agendar">Agendar</NavigationLink>
         </PaginaParaRedirecionamentosContainer>
     );
 };

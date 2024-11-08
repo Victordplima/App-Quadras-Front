@@ -58,7 +58,7 @@ export const alterarStatusReserva = async (reservaId, status) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Erro na requisição para alterar status:", error); // Mais detalhes do erro
+        console.error("Erro na requisição para alterar status:", error);
         if (error.response) {
             console.error("Status:", error.response.status);
             console.error("Dados da resposta:", error.response.data);
