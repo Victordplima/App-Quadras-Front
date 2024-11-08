@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { buscarQuadras } from "../../api/quadra";
 import { motion } from "framer-motion";
 
-// Importe as imagens das quadras diretamente
 import quadraAreia3 from "../../assets/Quadra de areia 3.jpg";
 import campoFutebol from "../../assets/Campo de futebol.jpg";
 import quadraAreia2 from "../../assets/Quadra de areia 2.jpg";
@@ -12,7 +11,6 @@ import quadraDescoberta from "../../assets/Quadra descoberta.jpg";
 import quadraAreia1 from "../../assets/Quadra de areia 1.jpg";
 import pistaAtletismo from "../../assets/Pista de atletismo.jpeg";
 
-// Mapear as imagens
 const quadraImages = {
     "Quadra de Areia 3": quadraAreia3,
     "Campo de Futebol": campoFutebol,
@@ -26,15 +24,15 @@ const quadraImages = {
 const CardsContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Centraliza os cards */
+    justify-content: center;
     gap: 20px;
     padding: 20px;
 `;
 
 const Card = styled(motion.div)`
-    flex: 1 1 200px; /* Permite que os cards sejam flexíveis e tenham um tamanho base */
+    flex: 1 1 200px;
     max-width: 200px;
-    min-width: 150px; /* Define um tamanho mínimo para melhor ajuste em telas menores */
+    min-width: 150px;
     height: 200px;
     display: flex;
     flex-direction: column;
@@ -45,7 +43,7 @@ const Card = styled(motion.div)`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 10px;
     cursor: pointer;
-    opacity: ${({ selected }) => (selected ? 1 : 0.7)};
+    opacity: ${({ selected }) => (selected ? 1 : 0.4)};
     transform: ${({ selected }) => (selected ? "scale(1.05)" : "scale(1)")};
     transition: all 0.3s ease;
 
@@ -61,6 +59,20 @@ const Card = styled(motion.div)`
         color: #fff;
         font-size: 1rem;
         font-weight: bold;
+    }
+
+    /* Media Query para telas menores (celulares) */
+    @media (max-width: 600px) {
+        flex: 1 1 140px;
+        max-width: 160px;
+        height: 180px;
+    }
+
+    /* Media Query para telas maiores (PC) */
+    @media (min-width: 1024px) {
+        flex: 1 1 250px;
+        max-width: 200px;
+        height: 200px;
     }
 `;
 

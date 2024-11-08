@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import QuadraCards from "../../components/Alunos/QuadraCards";
-import DiaCarrossel from "../../components/Alunos/DiaCarrossel";
+import DiaCard from "../../components/Alunos/DiaCard";
 import HorarioCard from "../../components/Alunos/HorarioCard";
 
 const Container = styled.div`
@@ -87,7 +87,7 @@ const Agendamento = () => {
             />
 
             <h3>Selecione o dia</h3>
-            <DiaCarrossel
+            <DiaCard
                 days={days}
                 selectedDay={selectedDay}
                 setSelectedDay={setSelectedDay}
