@@ -61,14 +61,12 @@ const Card = styled(motion.div)`
         font-weight: bold;
     }
 
-    /* Media Query para telas menores (celulares) */
     @media (max-width: 600px) {
         flex: 1 1 140px;
         max-width: 160px;
         height: 180px;
     }
 
-    /* Media Query para telas maiores (PC) */
     @media (min-width: 1024px) {
         flex: 1 1 250px;
         max-width: 200px;
@@ -76,9 +74,8 @@ const Card = styled(motion.div)`
     }
 `;
 
-const QuadraCards = () => {
+const QuadraCards = ({ setSelectedQuadra, selectedQuadra }) => {
     const [quadras, setQuadras] = useState([]);
-    const [selectedQuadra, setSelectedQuadra] = useState(null);
 
     useEffect(() => {
         const fetchQuadras = async () => {
@@ -94,6 +91,7 @@ const QuadraCards = () => {
                 console.error("Erro ao buscar quadras:", error.message);
             }
         };
+
         fetchQuadras();
     }, []);
 
@@ -110,7 +108,10 @@ const QuadraCards = () => {
                     selected={selectedQuadra === quadra.id}
                     onClick={() => handleQuadraClick(quadra.id)}
                 >
-                    <img src={quadra.image} alt={quadra.name} />
+                    <img
+                        src={quadra.image || "/path/to/default-image.jpg"}
+                        alt={quadra.name}
+                    />
                     <p>{quadra.name}</p>
                 </Card>
             ))}

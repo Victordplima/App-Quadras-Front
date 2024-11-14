@@ -70,3 +70,17 @@ export const alterarStatusReserva = async (reservaId, status) => {
         );
     }
 };
+
+export const buscarAgendamentosDia = async (quadraId, data) => {
+    try {
+        const response = await api.get(`/reservas/${quadraId}/agendamentos`, {
+            params: { data },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error.response?.data?.message ||
+                "Erro ao buscar agendamentos do dia"
+        );
+    }
+};

@@ -2,97 +2,91 @@ import React from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
-const DaysContainer = styled(motion.div)`
+const DaysContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
     padding: 15px 0;
     margin-bottom: 20px;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 `;
 
 const DayButton = styled(motion.button)`
-    // Torne o botão animado
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: ${(props) => (props.selected ? "#00bfff" : "#00457f")};
+    background-color: ${(props) => (props.selected ? "#08bcfc" : "#00457f")};
     color: white;
     border: none;
-    border-radius: 8px;
     padding: 15px;
+    border-radius: 8px;
     cursor: pointer;
-    margin: 0 8px;
     width: 120px;
     text-align: center;
-
-    .date {
-        font-size: 1rem;
-        font-weight: bold;
-    }
-
-    .day {
-        font-size: 1.2rem;
-        margin-top: 5px;
-    }
-
-    @media (max-width: 600px) {
-        width: 100px;
-        padding: 10px;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
 `;
 
-// Gerar os dias úteis (sem sábados e domingos)
-const generateDays = () => {
-    const days = [];
-    const today = new Date();
-    for (let i = 0; i < 10; i++) {
-        const day = new Date();
-        day.setDate(today.getDate() + i);
-        if (day.getDay() !== 6 && day.getDay() !== 0) {
-            days.push(day);
-        }
-    }
-    return days;
-};
+const DayText = styled.div`
+    font-size: 18px;
+    font-weight: bold;
+`;
+
+const DayOfWeek = styled.div`
+    font-size: 16px;
+    margin-top: 5px;
+    font-weight: 600;
+`;
 
 const DiaCard = ({ selectedDay, setSelectedDay }) => {
+    const generateDays = () => {
+        const days = [];
+        const today = new Date();
+        for (let i = 0; i < 10; i++) {
+            const day = new Date();
+            day.setDate(today.getDate() + i);
+            if (day.getDay() !== 6 && day.getDay() !== 0) {
+                // excluir sábado (6) e domingo (0)
+                days.push(day);
+            }
+        }
+        return days;
+    };
+
     const days = generateDays();
 
+    const isSelected = (day) => {
+        return (
+            selectedDay &&
+            selectedDay.getDate() === day.getDate() &&
+            selectedDay.getMonth() === day.getMonth() &&
+            selectedDay.getFullYear() === day.getFullYear()
+        );
+    };
+
     return (
-        <DaysContainer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-        >
+        <DaysContainer>
             {days.map((day, index) => (
                 <DayButton
                     key={index}
-                    selected={selectedDay === index}
-                    onClick={() => setSelectedDay(index)}
+                    selected={isSelected(day)}
+                    onClick={() => {
+                        setSelectedDay(day);
+                    }}
                     whileHover={{ scale: 1.1 }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                    whileTap={{ scale: 0.9 }}
                 >
-                    <span className="date">
+                    <DayText>
                         {day.toLocaleDateString("pt-BR", {
-                            day: "numeric",
-                            month: "numeric",
+                            day: "2-digit",
+                            month: "2-digit",
                         })}
-                    </span>
-                    <span className="day">
-                        {index === 0
-                            ? "Hoje"
-                            : day.toLocaleDateString("pt-BR", {
-                                  weekday: "short",
-                              })}
-                    </span>
+                    </DayText>
+                    <DayOfWeek>
+                        {day.toLocaleDateString("pt-BR", {
+                            weekday: "long",
+                        })}
+                    </DayOfWeek>
                 </DayButton>
             ))}
         </DaysContainer>
