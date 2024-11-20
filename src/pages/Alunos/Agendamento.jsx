@@ -3,6 +3,11 @@ import styled from "styled-components";
 import QuadraCards from "../../components/Alunos/QuadraCards";
 import DiaCard from "../../components/Alunos/DiaCard";
 import HorarioCard from "../../components/Alunos/HorarioCard";
+import ModalEsporte from "../../components/Alunos/ModalAgendamentos/ModalEsporte";
+import ModalTermos from "../../components/Alunos/ModalAgendamentos/ModalTermos";
+import ModalConfirmacao from "../../components/Alunos/ModalAgendamentos/ModalConfirmacao";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
     background: linear-gradient(135deg, #50247a, #022660, #00a5aa);
@@ -29,16 +34,32 @@ const Agendamento = () => {
     const [selectedQuadra, setSelectedQuadra] = useState(null);
     const [selectedDay, setSelectedDay] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedSportId, setSelectedSportId] = useState(null);
+    const [showSportModal, setShowSportModal] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-    const handleAgendar = async () => {
-        console.log("Quadra selecionada:", selectedQuadra);
-        console.log("Dia selecionado:", selectedDay);
-        console.log("Horário selecionado:", selectedTime);
-
+    const handleAgendar = () => {
         if (!selectedQuadra || !selectedDay || !selectedTime) {
-            alert("Por favor, selecione uma quadra, dia e horário.");
+            toast.error("Por favor, selecione uma quadra, dia e horário.");
             return;
         }
+        setShowSportModal(true);
+    };
+
+    const handleSportSelection = (sportId) => {
+        setSelectedSportId(sportId);
+        setShowSportModal(false);
+        setShowTermsModal(true);
+    };
+
+    const handleTermsAccepted = () => {
+        setShowTermsModal(false);
+        setShowConfirmationModal(true);
+    };
+
+    const handleConfirmationClose = () => {
+        setShowConfirmationModal(false);
     };
 
     return (
@@ -63,6 +84,29 @@ const Agendamento = () => {
             />
 
             <AgendarButton onClick={handleAgendar}>Agendar</AgendarButton>
+
+            {showSportModal && (
+                <ModalEsporte
+                    quadraId={selectedQuadra}
+                    onNext={handleSportSelection}
+                    onClose={() => setShowSportModal(false)}
+                />
+            )}
+
+            {showTermsModal && (
+                <ModalTermos
+                    selectedQuadra={selectedQuadra}
+                    selectedDay={selectedDay}
+                    selectedTime={selectedTime}
+                    selectedSportId={selectedSportId}
+                    onAgendar={handleTermsAccepted}
+                    onClose={() => setShowTermsModal(false)}
+                />
+            )}
+
+            {showConfirmationModal && (
+                <ModalConfirmacao onClose={handleConfirmationClose} />
+            )}
         </Container>
     );
 };

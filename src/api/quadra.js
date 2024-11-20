@@ -14,14 +14,29 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+
+
 export const buscarQuadras = async () => {
     try {
         const response = await api.get(`/quadras`);
         return response.data;
     } catch (error) {
         throw new Error(
+            error.response?.data?.message || "Erro ao buscar as quadras"
+        );
+    }
+};
+
+
+
+export const buscarEsportesPorQuadraId = async (quadraId) => {
+    try {
+        const response = await api.get(`/quadras/${quadraId}/esportes`);
+        return response.data;
+    } catch (error) {
+        throw new Error(
             error.response?.data?.message ||
-                "Erro ao buscar as quadras"
+                "Erro ao buscar os esportes da quadra"
         );
     }
 };

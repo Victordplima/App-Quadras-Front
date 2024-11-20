@@ -110,34 +110,26 @@ const Login = () => {
     });
 
     const handleLogin = async () => {
-        setIsLoading(true); // Ativa o loading
+        setIsLoading(true);
         try {
-            // Valida os dados do formulário
             loginSchema.parse({ email, senha });
 
-            // Loga os valores do formulário
-            console.log("Dados do formulário:", { email, senha });
-
-            // Chama a função de login do utils/http.js
             const data = await loginRequest(email, senha);
 
-            // Loga a resposta da API
             console.log("Resposta da API:", data);
-
-            // Armazena o token no localStorage
             localStorage.setItem("token", data.token);
+            localStorage.setItem("usuarioId", data.usuario.id);
+
             alert("Login realizado com sucesso!");
         } catch (err) {
             if (err instanceof z.ZodError) {
-                // Captura erros de validação do Zod
                 setError(err.errors[0].message);
             } else {
-                // Loga o erro se não for de validação
                 console.log("Erro ao fazer login:", err);
                 setError(err.message || "Erro desconhecido");
             }
         } finally {
-            setIsLoading(false); // Desativa o loading após a tentativa
+            setIsLoading(false);
         }
     };
 
