@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { criarReserva } from "../../../api/reserva";
 import { toast } from "react-toastify";
 
+// Constantes para os termos
+const termosTexto = [
+    "1. O acesso às funcionalidades do PLACEHOLDER somente poderá ser realizado pelos USUÁRIOS que estiverem adequadamente cadastrados na plataforma. O cadastro no PLACEHOLDER apenas poderá ser realizado através de um e-mail corporativo, ou seja, de um domínio de correio eletrônico de uma empresa devidamente identificada, a fim de se evitar o acesso por pessoas não autorizadas ou com intenções diversas aos propósitos do PLACEHOLDER.",
+    "2. O não comparecimento pode resultar em bloqueio da conta.",
+    "3. O usuário é responsável pelo uso adequado das instalações.",
+    "4. Todos os termos são sujeitos a mudanças sem aviso prévio.",
+];
+
+// Estilos do Modal
 const ModalWrapper = styled.div`
     position: fixed;
     top: 0;
@@ -30,17 +39,41 @@ const ModalTitle = styled.h2`
     margin-bottom: 20px;
     font-size: 24px;
     font-weight: bold;
+    color: #000;
 `;
 
 const ModalText = styled.p`
     margin-bottom: 30px;
     font-size: 16px;
-    color: #333;
+    color: #000;
+`;
+
+const TermsContainer = styled.div`
+    max-height: 200px;
+    overflow-y: scroll;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 14px;
+    color: #000;
+`;
+
+const CheckBoxWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+`;
+
+const CheckBoxLabel = styled.label`
+    font-size: 14px;
+    color: #000;
+    margin-left: 10px;
 `;
 
 const Button = styled.button`
-    background-color: #009fe3;
-    color: white;
     padding: 12px 20px;
     border: none;
     border-radius: 8px;
@@ -50,6 +83,24 @@ const Button = styled.button`
 
     &:hover {
         background-color: #007bbd;
+    }
+
+    &.cancelar {
+        background-color: #d9534f;
+        color: white;
+
+        &:hover {
+            background-color: #c9302c;
+        }
+    }
+
+    &.confirmar {
+        background-color: #009fe3;
+        color: white;
+        &:disabled {
+            background-color: #b0d5f2;
+            cursor: not-allowed;
+        }
     }
 `;
 
@@ -61,42 +112,27 @@ const ModalTermos = ({
     onClose,
     onAgendar,
 }) => {
+    const [aceitoTermos, setAceitoTermos] = useState(false);
+
     const handleAceitar = async () => {
+        if (!aceitoTermos) {
+            toast.error("Você precisa aceitar os termos para continuar.");
+            return;
+        }
+
         const usuarioId = localStorage.getItem("usuarioId");
 
-        console.log("selectedDay:", selectedDay);
-        console.log("selectedTime:", selectedTime);
-
+        // Separando hora e minutos de selectedTime
         const [horaInicio, minutoInicio] = selectedTime.split(":").map(Number);
 
         const dataInicio = new Date(selectedDay);
-
         dataInicio.setHours(horaInicio, minutoInicio, 0, 0);
-        console.log("dataInicio:", dataInicio);
 
-        // adiciona +1hr para a data fim
         let dataFim = new Date(dataInicio);
         dataFim.setHours(dataInicio.getHours() + 1);
-        console.log("dataFim:", dataFim);
 
-        // nem tenta entender esse trem da data, saiba que ele funciona...
-        const horaInicioFormatada = `${dataInicio
-            .getHours()
-            .toString()
-            .padStart(2, "0")}:${dataInicio
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`;
-        const horaFimFormatada = `${dataFim
-            .getHours()
-            .toString()
-            .padStart(2, "0")}:${dataFim
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`;
-
-        console.log("Hora de Início:", horaInicioFormatada);
-        console.log("Hora de Fim:", horaFimFormatada);
+        const horaInicioFormatada = dataInicio.toISOString().slice(11, 19);
+        const horaFimFormatada = dataFim.toISOString().slice(11, 19);
 
         const reservaData = {
             usuarioId,
@@ -106,8 +142,6 @@ const ModalTermos = ({
             horaInicio: horaInicioFormatada,
             horaFim: horaFimFormatada,
         };
-
-        console.log("reservaData:", reservaData);
 
         try {
             await criarReserva(reservaData);
@@ -122,14 +156,40 @@ const ModalTermos = ({
     return (
         <ModalWrapper>
             <ModalBox>
-                <ModalTitle>Termos e Condições</ModalTitle>
+                <ModalTitle>Deseja agendar o horário?</ModalTitle>
                 <ModalText>
-                    Para continuar com a sua reserva, você precisa aceitar os
-                    termos e condições. Leia atentamente antes de confirmar sua
-                    reserva.
+                    Para continuar com a sua reserva, leia atentamente os termos
+                    e condições abaixo e marque a caixa para aceitar os termos.
                 </ModalText>
-                <Button onClick={handleAceitar}>Aceitar e Confirmar</Button>
-                <Button onClick={onClose}>Cancelar</Button>
+
+                <TermsContainer>
+                    {termosTexto.map((termo, index) => (
+                        <p key={index}>{termo}</p>
+                    ))}
+                </TermsContainer>
+
+                <CheckBoxWrapper>
+                    <input
+                        type="checkbox"
+                        id="aceitoTermos"
+                        checked={aceitoTermos}
+                        onChange={(e) => setAceitoTermos(e.target.checked)}
+                    />
+                    <CheckBoxLabel htmlFor="aceitoTermos">
+                        Aceito os termos e condições
+                    </CheckBoxLabel>
+                </CheckBoxWrapper>
+
+                <Button
+                    className="confirmar"
+                    onClick={handleAceitar}
+                    disabled={!aceitoTermos}
+                >
+                    Aceitar e Confirmar
+                </Button>
+                <Button className="cancelar" onClick={onClose}>
+                    Cancelar
+                </Button>
             </ModalBox>
         </ModalWrapper>
     );

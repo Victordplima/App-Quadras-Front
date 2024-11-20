@@ -19,15 +19,21 @@ const Container = styled.div`
 `;
 
 const AgendarButton = styled.button`
-    width: 100%;
-    padding: 15px;
+    width: 200px;
+    padding: 10px 20px;
     background-color: #00bfff;
     color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 20px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 50px;
+
+    &:hover {
+        background-color: #009fe3;
+    }
 `;
 
 const Agendamento = () => {
