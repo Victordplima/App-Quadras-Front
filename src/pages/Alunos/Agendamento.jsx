@@ -6,6 +6,7 @@ import HorarioCard from "../../components/Alunos/HorarioCard";
 import ModalEsporte from "../../components/Alunos/ModalAgendamentos/ModalEsporte";
 import ModalTermos from "../../components/Alunos/ModalAgendamentos/ModalTermos";
 import ModalConfirmacao from "../../components/Alunos/ModalAgendamentos/ModalConfirmacao";
+import Header from "../../components/Alunos/Header"
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,6 +17,12 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+`;
+
+const Title = styled.h1`
+    color: white;
+    padding-top: 80px;
+    font-size: 32px;
 `;
 
 const AgendarButton = styled.button`
@@ -70,7 +77,8 @@ const Agendamento = () => {
 
     return (
         <Container>
-            <h2>Selecione uma quadra</h2>
+            <Header />
+            <Title>Selecione uma quadra</Title>
             <QuadraCards
                 setSelectedQuadra={setSelectedQuadra}
                 selectedQuadra={selectedQuadra}
