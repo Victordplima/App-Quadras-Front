@@ -17,6 +17,7 @@ import GerenciarUsuario from "./pages/Admin/GerenciarUsuario";
 //alunos e atleticas
 import Agendar from "./pages/Alunos/Agendamento";
 import FAQ from "./pages/Alunos/FAQ";
+import HistoricoAgendamentos from "./pages/Alunos/HistoricoAgendamentos";
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                 {/* Alunos e atléticas */}
                 <Route path="/agendar" element={<Agendar />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/historico" element={<HistoricoAgendamentos />} />
             </Routes>
         </Router>
     );

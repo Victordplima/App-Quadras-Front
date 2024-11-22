@@ -12,10 +12,10 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Função para criar uma reserva
+
+
 export const criarReserva = async (reservaData) => {
     try {
-        // Certifique-se de que os dados enviados incluam o esporteId, além dos campos obrigatórios
         const response = await api.post("/reservas", reservaData);
         return response.data;
     } catch (error) {
@@ -25,7 +25,8 @@ export const criarReserva = async (reservaData) => {
     }
 };
 
-// Buscar reservas da semana
+
+
 export const buscarReservasSemana = async (quadraId, page = 1) => {
     try {
         const response = await api.get("/reservas/semana", {
@@ -42,10 +43,18 @@ export const buscarReservasSemana = async (quadraId, page = 1) => {
     }
 };
 
-// Buscar reservas de um usuário específico
-export const buscarReservasUsuario = async (usuarioId) => {
+
+
+export const buscarReservasUsuario = async (
+    usuarioId,
+    page = 1,
+    limit = 5,
+    quadra = ""
+) => {
     try {
-        const response = await api.get(`/reservas/usuario/${usuarioId}`);
+        const response = await api.get(`/reservas/usuario/${usuarioId}`, {
+            params: { page, limit, quadra },
+        });
         return response.data;
     } catch (error) {
         throw new Error(
@@ -55,7 +64,8 @@ export const buscarReservasUsuario = async (usuarioId) => {
     }
 };
 
-// Alterar o status de uma reserva
+
+
 export const alterarStatusReserva = async (reservaId, status) => {
     try {
         const response = await api.put(`/reservas/status/${reservaId}`, {
@@ -76,7 +86,8 @@ export const alterarStatusReserva = async (reservaId, status) => {
     }
 };
 
-// Buscar agendamentos de um dia específico
+
+
 export const buscarAgendamentosDia = async (quadraId, data) => {
     try {
         const response = await api.get(`/reservas/${quadraId}/agendamentos`, {
