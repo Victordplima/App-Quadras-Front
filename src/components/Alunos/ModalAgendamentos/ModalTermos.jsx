@@ -125,20 +125,34 @@ const ModalTermos = ({
         // Separando hora e minutos de selectedTime
         const [horaInicio, minutoInicio] = selectedTime.split(":").map(Number);
 
-        const dataInicio = new Date(selectedDay);
-        dataInicio.setHours(horaInicio, minutoInicio, 0, 0);
+        // Criando a data de início em UTC
+        const dataInicio = new Date(
+            Date.UTC(
+                selectedDay.getFullYear(),
+                selectedDay.getMonth(),
+                selectedDay.getDate(),
+                horaInicio,
+                minutoInicio
+            )
+        );
 
         let dataFim = new Date(dataInicio);
-        dataFim.setHours(dataInicio.getHours() + 1);
+        dataFim.setHours(dataInicio.getHours() + 1); // Somando uma hora na data de fim
 
-        const horaInicioFormatada = dataInicio.toISOString().slice(11, 19);
-        const horaFimFormatada = dataFim.toISOString().slice(11, 19);
+        console.log("Data início:", dataInicio.toISOString());
+        console.log("Data fim:", dataFim.toISOString());
+
+        // Formatar a hora de início e fim
+        const horaInicioFormatada = dataInicio.toISOString().slice(11, 19); // Hora no formato HH:mm:ss
+        const horaFimFormatada = dataFim.toISOString().slice(11, 19); // Hora no formato HH:mm:ss
+        console.log("Hora de início formatada:", horaInicioFormatada);
+        console.log("Hora de fim formatada:", horaFimFormatada);
 
         const reservaData = {
             usuarioId,
             quadraId: selectedQuadra,
             esporteId: selectedSportId,
-            data: selectedDay.toISOString().split("T")[0],
+            data: selectedDay.toISOString().split("T")[0], // Data no formato AAAA-MM-DD
             horaInicio: horaInicioFormatada,
             horaFim: horaFimFormatada,
         };

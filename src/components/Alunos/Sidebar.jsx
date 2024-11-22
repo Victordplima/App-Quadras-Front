@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, sidebarRef }) => {
                 <FontAwesomeIcon icon={faCalendar} size="lg" />
                 <ButtonText>Agendar</ButtonText>
             </SidebarButton>
-            <SidebarButton to="/gerenciar" activeClassName="active">
+            <SidebarButton to="/historico" activeClassName="active">
                 <FontAwesomeIcon icon={faHistory} size="lg" />
                 <ButtonText>Histórico</ButtonText>
             </SidebarButton>
