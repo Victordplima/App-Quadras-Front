@@ -20,10 +20,11 @@ export const criarReserva = async (reservaData) => {
         return response.data;
     } catch (error) {
         throw new Error(
-            error.response?.data?.message || "Erro ao criar reserva"
+            error.response?.data?.mensagem || "Erro ao criar reserva"
         );
     }
 };
+
 
 
 
