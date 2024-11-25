@@ -3,6 +3,8 @@ import styled from "styled-components";
 import logo from "../assets/Logo 1.png";
 import { z } from "zod";
 import { login as loginRequest } from "../api/usuario";
+import { useAuth } from "../context/AuthContext"; // Importar o contexto de autenticação
+import { useNavigate } from "react-router-dom"; // Para navegação após o login
 
 const Container = styled.div`
     display: flex;
@@ -102,6 +104,8 @@ const Login = () => {
     const [senha, setSenha] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const { login } = useAuth(); // Usando o contexto de autenticação
+    const navigate = useNavigate(); // Para redirecionar após o login
 
     // Schema de validação Zod (sem limite de 6 caracteres para a senha)
     const loginSchema = z.object({
@@ -117,10 +121,15 @@ const Login = () => {
             const data = await loginRequest(email, senha);
 
             console.log("Resposta da API:", data);
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("usuarioId", data.usuario.id);
 
-            alert("Login realizado com sucesso!");
+            login(data.usuario, data.token);
+
+            // Redireciona o usuário baseado no seu papel (role)
+            if (data.usuario.role === "admin") {
+                navigate("/agendamentos"); // Para admins
+            } else {
+                navigate("/agendar"); // Para alunos e atléticas
+            }
         } catch (err) {
             if (err instanceof z.ZodError) {
                 setError(err.errors[0].message);
