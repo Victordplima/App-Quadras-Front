@@ -26,6 +26,7 @@ const CardList = styled.div`
 `;
 
 const HistoricoAgendamentos = () => {
+    // eslint-disable-next-line no-unused-vars
     const [reservas, setReservas] = useState([]);
     const [ativos, setAtivos] = useState([]);
     const [antigos, setAntigos] = useState([]);

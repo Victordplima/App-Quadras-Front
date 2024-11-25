@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import ModalConfirmacao from "./ModalConfirmacao";
+import { faCircleMinus } from "@fortawesome/free-solid-svg-icons";
 
 import quadraAreia3 from "../../assets/Quadra de areia 3.jpg";
 import campoFutebol from "../../assets/Campo de futebol.jpg";
@@ -27,7 +28,7 @@ const Card = styled(motion.div)`
     width: 320px;
     background-color: #f9f9f9;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -67,12 +68,17 @@ const Options = styled.div`
     position: relative;
     cursor: pointer;
 
+    .icon {
+        color: black;
+        font-size: 1.2rem;
+    }
+
     .dropdown {
         position: absolute;
         top: 20px;
         right: 0;
         background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         border-radius: 5px;
         overflow: hidden;
         z-index: 10;
@@ -85,10 +91,19 @@ const Options = styled.div`
             text-align: left;
             cursor: pointer;
             font-size: 1rem;
-            color: #555;
+            color: #b60000;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
 
             &:hover {
                 background-color: #f5f5f5;
+                transform: scale(1.05);
+            }
+
+            svg {
+                margin-right: 8px;
+                color: #b60000;
             }
         }
     }
@@ -124,6 +139,10 @@ const Footer = styled.div`
     p {
         margin: 0;
     }
+`;
+
+const NomeQuadra = styled.h3`
+    color: black;
 `;
 
 const CardReserva = ({ reserva }) => {
@@ -174,19 +193,32 @@ const CardReserva = ({ reserva }) => {
             </ImageSection>
             <Content>
                 <Header>
-                    <h3>{reserva.quadra_nome}</h3>
+                    <NomeQuadra>{reserva.quadra_nome}</NomeQuadra>
                     <Options>
                         <FontAwesomeIcon
                             icon={faEllipsisV}
+                            className="icon"
                             onClick={toggleDropdown}
                         />
-                        {isDropdownOpen && (
-                            <div className="dropdown">
-                                <button onClick={handleCancelarReserva}>
-                                    Cancelar
-                                </button>
-                            </div>
-                        )}
+                        <AnimatePresence>
+                            {isDropdownOpen && (
+                                <motion.div
+                                    className="dropdown"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <button onClick={handleCancelarReserva}>
+                                        <FontAwesomeIcon
+                                            icon={faCircleMinus}
+                                            style={{ marginRight: "8px" }}
+                                        />
+                                        Cancelar
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </Options>
                 </Header>
                 <Details>
