@@ -23,6 +23,9 @@ import Agendar from "./pages/Alunos/Agendamento";
 import FAQ from "./pages/Alunos/FAQ";
 import HistoricoAgendamentos from "./pages/Alunos/HistoricoAgendamentos";
 
+// supervisão
+import SupervisaoAgendamentos from "./pages/Supervisao/SupervisaoAgendamentos";
+
 import { useAuth } from "./context/AuthContext"; // Importando o contexto de autenticação
 
 function App() {
@@ -43,6 +46,8 @@ function App() {
                             ) : user.role === "aluno" ||
                               user.role === "atletica" ? (
                                 <Navigate to="/agendar" />
+                            ) : user.role === "supervisao" ? (
+                                <Navigate to="/supervisao/agendamentos" />
                             ) : (
                                 <Navigate to="/login" />
                             )
@@ -121,6 +126,18 @@ function App() {
                     element={
                         user?.role === "aluno" || user?.role === "atletica" ? (
                             <HistoricoAgendamentos />
+                        ) : (
+                            <Navigate to="/" />
+                        )
+                    }
+                />
+
+                {/* Supervisão Routes */}
+                <Route
+                    path="/supervisao/agendamentos"
+                    element={
+                        user?.role === "supervisao" ? (
+                            <SupervisaoAgendamentos />
                         ) : (
                             <Navigate to="/" />
                         )

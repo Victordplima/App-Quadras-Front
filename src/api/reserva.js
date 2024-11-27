@@ -101,4 +101,18 @@ export const buscarAgendamentosDia = async (quadraId, data) => {
                 "Erro ao buscar agendamentos do dia"
         );
     }
+}
+
+
+
+export const buscarReservasDia = async () => {
+    try {
+        const response = await api.get("/reservas/dia");
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error.response?.data?.message ||
+                "Erro ao buscar reservas do dia"
+        );
+    }
 };

@@ -117,18 +117,22 @@ const Login = () => {
         setIsLoading(true);
         try {
             loginSchema.parse({ email, senha });
-
+    
             const data = await loginRequest(email, senha);
-
+    
             console.log("Resposta da API:", data);
-
+    
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+            }
+    
             login(data.usuario, data.token);
-
-            // Redireciona o usuário baseado no seu papel (role)
+    
+            // Redireciona o usuario dependendo da role
             if (data.usuario.role === "admin") {
-                navigate("/agendamentos"); // Para admins
+                navigate("/agendamentos"); // admins
             } else {
-                navigate("/agendar"); // Para alunos e atléticas
+                navigate("/agendar"); // alunos e atleticas
             }
         } catch (err) {
             if (err instanceof z.ZodError) {
