@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { buscarReservasSemana, alterarStatusReserva } from "../../api/reserva";
-import { buscarUsuarioPorId } from "../../api/usuario";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import socket from "../../api/socket";
 
 const TableContainer = styled.div`
     margin-top: 30px;
@@ -48,41 +48,52 @@ const Button = styled.button`
 const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     const [agendamentos, setAgendamentosLocal] = useState([]);
 
-    const formatarDataHora = (data, hora) => {
-        return `${format(new Date(data), "dd/MM/yyyy")} ${format(
-            new Date(`1970-01-01T${hora}Z`),
+    // Função para formatar a data e hora (exibindo dia, horário de início e fim)
+    const formatarDataHoraUso = (data, horaInicio, horaFim) => {
+        const dia = format(new Date(data), "dd/MM");
+        const horaInicial = format(
+            new Date(`1970-01-01T${horaInicio}Z`),
             "HH:mm"
-        )}`;
+        );
+        const horaFinal = format(new Date(`1970-01-01T${horaFim}Z`), "HH:mm");
+        return `${dia} | ${horaInicial} - ${horaFinal}`;
     };
 
-    useEffect(() => {
-        const fetchAgendamentos = async () => {
-            try {
-                const reservas = await buscarReservasSemana(quadraId);
-                const reservasComUsuarios = await Promise.all(
-                    reservas.map(async (reserva) => {
-                        const usuario = await buscarUsuarioPorId(
-                            reserva.usuario_id
-                        );
-                        return {
-                            ...reserva,
-                            matricula: usuario.matricula,
-                            nomeAluno: usuario.nome,
-                            curso: usuario.curso,
-                        };
-                    })
-                );
-                setAgendamentosLocal(reservasComUsuarios);
-                setAgendamentos(reservasComUsuarios); // Atualiza o estado do pai com os agendamentos
-            } catch (error) {
-                console.error("Erro ao buscar agendamentos:", error);
-            }
-        };
+    const formatarDataHoraPedido = (data, hora) => {
+        const diaMes = format(new Date(data), "dd/MM");
+        const horaFormatada = format(new Date(`1970-01-01T${hora}Z`), "HH:mm");
+        return `${diaMes} | ${horaFormatada}`;
+    };
 
+    // Mover fetchAgendamentos para useCallback para garantir estabilidade
+    const fetchAgendamentos = useCallback(async () => {
+        try {
+            const reservas = await buscarReservasSemana(quadraId);
+            setAgendamentosLocal(reservas);
+            setAgendamentos(reservas);
+        } catch (error) {
+            console.error("Erro ao buscar agendamentos:", error);
+        }
+    }, [quadraId, setAgendamentos]);
+
+    useEffect(() => {
         if (quadraId) {
             fetchAgendamentos();
         }
-    }, [quadraId, setAgendamentos]); // Adicione setAgendamentos aqui
+    }, [quadraId, fetchAgendamentos]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("atualizarReservas", (data) => {
+                console.log("Evento recebido:", data);
+                fetchAgendamentos(); // recarrega as reservas quando ouve
+            });
+
+            return () => {
+                socket.off("atualizarReservas");
+            };
+        }
+    }, [fetchAgendamentos]);
 
     const handleStatusUpdate = async (reservaId, novoStatus) => {
         try {
@@ -94,20 +105,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
                         : agendamento
                 )
             );
-
-            if (novoStatus === "Confirmada") {
-                const agendamentoConfirmado = agendamentos.find(
-                    (a) => a.id === reservaId
-                );
-                setAgendamentos((prevAgendamentos) =>
-                    prevAgendamentos.map((agendamento) =>
-                        agendamento.id === agendamentoConfirmado.id
-                            ? agendamentoConfirmado
-                            : agendamento
-                    )
-                );
-            }
-
             toast.success(`Reserva ${novoStatus} com sucesso!`);
         } catch (error) {
             console.error("Erro ao atualizar status:", error.message);
@@ -134,17 +131,17 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
                         agendamentos.map((agendamento) => (
                             <Row key={agendamento.id}>
                                 <Td>{agendamento.matricula}</Td>
-                                <Td>{agendamento.nomeAluno}</Td>
+                                <Td>{agendamento.usuario_nome}</Td>
                                 <Td>{agendamento.curso}</Td>
-                                <Td>{`${formatarDataHora(
-                                    agendamento.data,
-                                    agendamento.hora_inicio
-                                )} - ${formatarDataHora(
-                                    agendamento.data,
-                                    agendamento.hora_fim
-                                )}`}</Td>
                                 <Td>
-                                    {formatarDataHora(
+                                    {formatarDataHoraUso(
+                                        agendamento.data,
+                                        agendamento.hora_inicio,
+                                        agendamento.hora_fim
+                                    )}
+                                </Td>
+                                <Td>
+                                    {formatarDataHoraPedido(
                                         agendamento.data_criacao,
                                         agendamento.hora_criacao
                                     )}

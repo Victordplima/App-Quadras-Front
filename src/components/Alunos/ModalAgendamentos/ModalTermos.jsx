@@ -120,7 +120,8 @@ const ModalTermos = ({
             return;
         }
 
-        const usuarioId = localStorage.getItem("usuarioId");
+        const user = JSON.parse(localStorage.getItem("user")); // Fazendo o parse do objeto
+        const usuarioId = user ? user.id : null; // Acessando o id, com verificação se o usuário existe
 
         // Separando hora e minutos de selectedTime
         const [horaInicio, minutoInicio] = selectedTime.split(":").map(Number);
@@ -159,6 +160,7 @@ const ModalTermos = ({
 
         try {
             await criarReserva(reservaData);
+            console.log(reservaData);
             toast.success("Reserva criada com sucesso!");
             onAgendar();
         } catch (error) {

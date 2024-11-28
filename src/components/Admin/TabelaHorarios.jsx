@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { buscarReservasSemana } from "../../api/reserva";
 import { buscarUsuarioPorId } from "../../api/usuario";
+import socket from "../../api/socket"; // Importe o cliente WebSocket configurado
 
 const Tabela = styled.table`
     width: 100%;
@@ -76,48 +77,60 @@ const TabelaHorarios = ({ quadraId }) => {
         [diasDaSemana]
     );
 
-    useEffect(() => {
-        const fetchReservasDaSemana = async () => {
-            if (!quadraId) return;
+    const atualizarReservas = useCallback(async () => {
+        if (!quadraId) return;
 
-            try {
-                const reservas = await buscarReservasSemana(quadraId);
-                const reservasConfirmadas = reservas.filter(
-                    (reserva) => reserva.status === "Confirmada"
-                );
+        try {
+            const reservas = await buscarReservasSemana(quadraId);
+            const reservasConfirmadas = reservas.filter(
+                (reserva) => reserva.status === "Confirmada"
+            );
 
-                const usuariosPromises = reservasConfirmadas.map(
-                    async (reserva) => {
-                        const usuario = await buscarUsuarioPorId(
-                            reserva.usuario_id
-                        );
-                        return { ...reserva, nomeUsuario: usuario.nome };
-                    }
-                );
+            const usuariosPromises = reservasConfirmadas.map(
+                async (reserva) => {
+                    const usuario = await buscarUsuarioPorId(
+                        reserva.usuario_id
+                    );
+                    return { ...reserva, nomeUsuario: usuario.nome };
+                }
+            );
 
-                const reservasComUsuarios = await Promise.all(usuariosPromises);
+            const reservasComUsuarios = await Promise.all(usuariosPromises);
 
-                const novosHorariosReservados = reservasComUsuarios.reduce(
-                    (acc, reserva) => {
-                        const dia = formatarDiaDaSemana(reserva.data);
-                        const chave = `${dia}-${reserva.hora_inicio.slice(
-                            0,
-                            5
-                        )}`;
-                        acc[chave] = reserva.nomeUsuario;
-                        return acc;
-                    },
-                    {}
-                );
+            const novosHorariosReservados = reservasComUsuarios.reduce(
+                (acc, reserva) => {
+                    const dia = formatarDiaDaSemana(reserva.data);
+                    const chave = `${dia}-${reserva.hora_inicio.slice(0, 5)}`;
+                    acc[chave] = reserva.nomeUsuario;
+                    return acc;
+                },
+                {}
+            );
 
-                setHorariosReservados(novosHorariosReservados);
-            } catch (error) {
-                console.error("Erro ao buscar reservas:", error);
-            }
-        };
-
-        fetchReservasDaSemana();
+            setHorariosReservados(novosHorariosReservados);
+        } catch (error) {
+            console.error("Erro ao buscar reservas:", error);
+        }
     }, [quadraId, formatarDiaDaSemana]);
+
+    useEffect(() => {
+        atualizarReservas();
+    }, [quadraId, atualizarReservas]);
+
+    useEffect(() => {
+        if (socket) {
+            // Ouvir evento de atualização
+            socket.on("atualizarReservas", () => {
+                console.log("Evento de atualização recebido via WebSocket");
+                atualizarReservas(); // Revalida os dados
+            });
+
+            // Limpeza ao desmontar o componente
+            return () => {
+                socket.off("atualizarReservas");
+            };
+        }
+    }, [atualizarReservas]);
 
     const gerarDatasDaSemana = () => {
         const hoje = new Date();

@@ -51,6 +51,9 @@ export const cadastrarUsuario = async (dados) => {
 };
 
 export const buscarUsuarioPorId = async (id) => {
+    if (!id) {
+        throw new Error("ID inválido.");
+    }
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("Token não encontrado");
