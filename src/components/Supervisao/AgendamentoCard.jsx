@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom"; // Importando useNavigate para navegação
 
 // Imagens das quadras
 import quadraAreia3 from "../../assets/Quadra de areia 3.jpg";
@@ -11,7 +10,6 @@ import quadraDescoberta from "../../assets/Quadra descoberta.jpg";
 import quadraAreia1 from "../../assets/Quadra de areia 1.jpg";
 import pistaAtletismo from "../../assets/Pista de atletismo.jpeg";
 
-// Mapeamento das imagens com os nomes das quadras
 const quadraImages = {
     "Quadra de Areia 3": quadraAreia3,
     "Campo de Futebol": campoFutebol,
@@ -33,7 +31,7 @@ const Card = styled.div`
     align-items: center;
     gap: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer; /* Aplica cursor de mão para indicar que é clicável */
+    cursor: pointer;
 
     &:hover {
         transform: scale(1.05);
@@ -79,19 +77,12 @@ const Image = styled.img`
     }
 `;
 
-const AgendamentoCard = ({ reserva }) => {
-    const navigate = useNavigate(); // Hook de navegação
-
+const AgendamentoCard = ({ reserva, onClick }) => {
     const quadraImage =
-        quadraImages[reserva.quadra_nome] || "/path/to/default-image.jpg"; // Fallback para imagem padrão
-
-    const handleCardClick = () => {
-        // Redireciona para a tela de verificação, passando os dados da reserva
-        navigate("/verificacao", { state: reserva });
-    };
+        quadraImages[reserva.quadra_nome] || "/path/to/default-image.jpg";
 
     return (
-        <Card onClick={handleCardClick}>
+        <Card onClick={onClick}>
             <Image src={quadraImage} alt={reserva.quadra_nome} />
             <CardInfo>
                 <Title>{reserva.quadra_nome}</Title>

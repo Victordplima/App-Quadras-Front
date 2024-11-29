@@ -42,12 +42,21 @@ const DiaCard = ({ selectedDay, setSelectedDay }) => {
     const generateDays = () => {
         const days = [];
         const today = new Date();
+
         for (let i = 0; i < 10; i++) {
-            const day = new Date();
-            day.setDate(today.getDate() + i);
-            if (day.getDay() !== 6 && day.getDay() !== 0) {
+            const localDay = new Date(today);
+            localDay.setDate(today.getDate() + i);
+
+            // Ajustar para horário local no Brasil (GMT-3)
+            const normalizedDay = new Date(
+                localDay.toLocaleString("en-US", {
+                    timeZone: "America/Sao_Paulo",
+                })
+            );
+
+            if (normalizedDay.getDay() !== 6 && normalizedDay.getDay() !== 0) {
                 // excluir sábado (6) e domingo (0)
-                days.push(day);
+                days.push(normalizedDay);
             }
         }
         return days;

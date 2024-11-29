@@ -116,3 +116,17 @@ export const buscarReservasDia = async () => {
         );
     }
 };
+
+
+
+export const buscarReservasDiaSemOcorrencia = async () => {
+    try {
+        const response = await api.get("/reservas/dia-sem-ocorrencia");
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error.response?.data?.message ||
+                "Erro ao buscar reservas do dia sem ocorrencia"
+        );
+    }
+};

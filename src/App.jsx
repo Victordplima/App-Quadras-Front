@@ -25,8 +25,9 @@ import HistoricoAgendamentos from "./pages/Alunos/HistoricoAgendamentos";
 
 // supervisão
 import SupervisaoAgendamentos from "./pages/Supervisao/SupervisaoAgendamentos";
+import VerificacaoTela from "./pages/Supervisao/VerificacaoTela";
 
-import { useAuth } from "./context/AuthContext"; // Importando o contexto de autenticação
+import { useAuth } from "./context/AuthContext";
 
 function App() {
     const { user } = useAuth(); // Usando o contexto de autenticação
@@ -138,6 +139,16 @@ function App() {
                     element={
                         user?.role === "supervisao" ? (
                             <SupervisaoAgendamentos />
+                        ) : (
+                            <Navigate to="/" />
+                        )
+                    }
+                />
+                <Route
+                    path="/supervisao/verificacao"
+                    element={
+                        user?.role === "supervisao" ? (
+                            <VerificacaoTela />
                         ) : (
                             <Navigate to="/" />
                         )
