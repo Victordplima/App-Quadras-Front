@@ -61,7 +61,11 @@ const Title = styled.h3`
 const Subtitle = styled.p`
     font-size: 1rem;
     margin: 5px 0;
-    color: #555;
+    color: #000000;
+
+    span {
+        font-weight: bold;
+    }
 `;
 
 const Image = styled.img`
@@ -87,13 +91,19 @@ const AgendamentoCard = ({ reserva, onClick }) => {
             <CardInfo>
                 <Title>{reserva.quadra_nome}</Title>
                 <Subtitle>
-                    Data: {new Date(reserva.data).toLocaleDateString()}
+                    <span>Data:</span>{" "}
+                    {new Date(reserva.data).toLocaleDateString()}
                 </Subtitle>
                 <Subtitle>
-                    Hora: {reserva.hora_inicio} - {reserva.hora_fim}
+                    <span>Hora:</span> {reserva.hora_inicio} -{" "}
+                    {reserva.hora_fim}
                 </Subtitle>
-                <Subtitle>Nome: {reserva.usuario_nome}</Subtitle>
-                <Subtitle>Esporte: {reserva.esporte_nome}</Subtitle>
+                <Subtitle>
+                    <span>Nome:</span> {reserva.usuario_nome}
+                </Subtitle>
+                <Subtitle>
+                    <span>Esporte:</span> {reserva.esporte_nome}
+                </Subtitle>
             </CardInfo>
         </Card>
     );
