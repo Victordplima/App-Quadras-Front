@@ -46,6 +46,7 @@ const DiaCard = ({ selectedDay, setSelectedDay }) => {
         for (let i = 0; i < 10; i++) {
             const localDay = new Date(today);
             localDay.setDate(today.getDate() + i);
+            localDay.setHours(0, 0, 0, 0); // Normalizar horário para o início do dia (00:00:00)
 
             // Ajustar para horário local no Brasil (GMT-3)
             const normalizedDay = new Date(
@@ -54,8 +55,8 @@ const DiaCard = ({ selectedDay, setSelectedDay }) => {
                 })
             );
 
+            // Excluir sábado (6) e domingo (0)
             if (normalizedDay.getDay() !== 6 && normalizedDay.getDay() !== 0) {
-                // excluir sábado (6) e domingo (0)
                 days.push(normalizedDay);
             }
         }
