@@ -156,3 +156,27 @@ export const buscarHistoricoDoUsuario = async (userId) => {
         throw error;
     }
 };
+
+
+
+export const buscarInformacoesUsuarioCompleto = async (id) => {
+    if (!id) {
+        throw new Error("ID inválido.");
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    try {
+        const response = await api.get(`/usuarios/${id}/informacoes-completas`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar usuário:", error);
+        throw error;
+    }
+};

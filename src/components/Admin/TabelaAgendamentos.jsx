@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import socket from "../../api/socket";
+import MiniPerfilUsuario from "./MiniPerfilUsuario";
 
 const TableContainer = styled.div`
     margin-top: 30px;
@@ -45,10 +46,19 @@ const Button = styled.button`
         action === "aceitar" ? "#4CAF50" : "#FF5722"};
 `;
 
+const LinkButton = styled.button`
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+`;
+
 const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     const [agendamentos, setAgendamentosLocal] = useState([]);
+    const [perfilAberto, setPerfilAberto] = useState(false);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
 
-    // Função para formatar a data e hora (exibindo dia, horário de início e fim)
     const formatarDataHoraUso = (data, horaInicio, horaFim) => {
         const dia = format(new Date(data), "dd/MM");
         const horaInicial = format(
@@ -65,7 +75,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         return `${diaMes} | ${horaFormatada}`;
     };
 
-    // Mover fetchAgendamentos para useCallback para garantir estabilidade
     const fetchAgendamentos = useCallback(async () => {
         try {
             const reservas = await buscarReservasSemana(quadraId);
@@ -86,7 +95,7 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         if (socket) {
             socket.on("atualizarReservas", (data) => {
                 console.log("Evento recebido:", data);
-                fetchAgendamentos(); // recarrega as reservas quando ouve
+                fetchAgendamentos();
             });
 
             return () => {
@@ -112,80 +121,111 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         }
     };
 
+    const abrirPerfilUsuario = (userId) => {
+        setUsuarioSelecionado(userId);
+        setPerfilAberto(true);
+    };
+
+    const fecharPerfil = () => {
+        setPerfilAberto(false);
+        setUsuarioSelecionado(null);
+    };
+
     return (
-        <TableContainer>
-            <Table>
-                <thead>
-                    <tr>
-                        <Th>Matrícula</Th>
-                        <Th>Nome do Aluno</Th>
-                        <Th>Curso</Th>
-                        <Th>Horário de uso</Th>
-                        <Th>Data/hora do pedido</Th>
-                        <Th>Status</Th>
-                        <Th>Ações</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {agendamentos.length > 0 ? (
-                        agendamentos.map((agendamento) => (
-                            <Row key={agendamento.id}>
-                                <Td>{agendamento.matricula}</Td>
-                                <Td>{agendamento.usuario_nome}</Td>
-                                <Td>{agendamento.curso}</Td>
-                                <Td>
-                                    {formatarDataHoraUso(
-                                        agendamento.data,
-                                        agendamento.hora_inicio,
-                                        agendamento.hora_fim
-                                    )}
-                                </Td>
-                                <Td>
-                                    {formatarDataHoraPedido(
-                                        agendamento.data_criacao,
-                                        agendamento.hora_criacao
-                                    )}
-                                </Td>
-                                <Td>{agendamento.status}</Td>
-                                <Td>
-                                    {agendamento.status ===
-                                        "Aguardando confirmação" && (
-                                        <>
-                                            <Button
-                                                action="aceitar"
-                                                onClick={() =>
-                                                    handleStatusUpdate(
-                                                        agendamento.id,
-                                                        "Confirmada"
-                                                    )
-                                                }
-                                            >
-                                                Aceitar
-                                            </Button>
-                                            <Button
-                                                action="recusar"
-                                                onClick={() =>
-                                                    handleStatusUpdate(
-                                                        agendamento.id,
-                                                        "Rejeitada"
-                                                    )
-                                                }
-                                            >
-                                                Recusar
-                                            </Button>
-                                        </>
-                                    )}
+        <>
+            <TableContainer>
+                <Table>
+                    <thead>
+                        <tr>
+                            <Th>Matrícula</Th>
+                            <Th>Nome do Aluno</Th>
+                            <Th>Curso</Th>
+                            <Th>Horário de uso</Th>
+                            <Th>Data/hora do pedido</Th>
+                            <Th>Status</Th>
+                            <Th>Ações</Th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {agendamentos.length > 0 ? (
+                            agendamentos.map((agendamento) => (
+                                <Row key={agendamento.id}>
+                                    <Td>{agendamento.matricula}</Td>
+                                    <Td>
+                                        <LinkButton
+                                            onClick={() =>
+                                                abrirPerfilUsuario(
+                                                    agendamento.usuario_id
+                                                )
+                                            }
+                                        >
+                                            {agendamento.usuario_nome}
+                                        </LinkButton>
+                                    </Td>
+                                    <Td>{agendamento.curso}</Td>
+                                    <Td>
+                                        {formatarDataHoraUso(
+                                            agendamento.data,
+                                            agendamento.hora_inicio,
+                                            agendamento.hora_fim
+                                        )}
+                                    </Td>
+                                    <Td>
+                                        {formatarDataHoraPedido(
+                                            agendamento.data_criacao,
+                                            agendamento.hora_criacao
+                                        )}
+                                    </Td>
+                                    <Td>{agendamento.status}</Td>
+                                    <Td>
+                                        {agendamento.status ===
+                                            "Aguardando confirmação" && (
+                                            <>
+                                                <Button
+                                                    action="aceitar"
+                                                    onClick={() =>
+                                                        handleStatusUpdate(
+                                                            agendamento.id,
+                                                            "Confirmada"
+                                                        )
+                                                    }
+                                                >
+                                                    Aceitar
+                                                </Button>
+                                                <Button
+                                                    action="recusar"
+                                                    onClick={() =>
+                                                        handleStatusUpdate(
+                                                            agendamento.id,
+                                                            "Rejeitada"
+                                                        )
+                                                    }
+                                                >
+                                                    Recusar
+                                                </Button>
+                                            </>
+                                        )}
+                                    </Td>
+                                </Row>
+                            ))
+                        ) : (
+                            <Row>
+                                <Td colSpan="7">
+                                    Nenhum agendamento encontrado.
                                 </Td>
                             </Row>
-                        ))
-                    ) : (
-                        <Row>
-                            <Td colSpan="7">Nenhum agendamento encontrado.</Td>
-                        </Row>
-                    )}
-                </tbody>
-            </Table>
-        </TableContainer>
+                        )}
+                    </tbody>
+                </Table>
+            </TableContainer>
+
+            {perfilAberto && (
+                <MiniPerfilUsuario
+                    userId={usuarioSelecionado}
+                    onClose={fecharPerfil}
+                />
+            )}
+        </>
     );
 };
 
