@@ -138,7 +138,9 @@ export const editarUsuario = async (id, dados) => {
     }
 };
 
-export const buscarHistoricoDoUsuario = async (userId) => {
+
+
+export const buscarHistoricoDoUsuario = async (userId, page = 1, limit = 20) => {
     const token = localStorage.getItem("token");
     if (!token) {
         throw new Error("Token não encontrado");
@@ -146,6 +148,10 @@ export const buscarHistoricoDoUsuario = async (userId) => {
 
     try {
         const response = await api.get(`/usuarios/${userId}/historico`, {
+            params: {
+                page,
+                limit
+            },
             headers: {
                 Authorization: `Bearer ${token}`,
             },

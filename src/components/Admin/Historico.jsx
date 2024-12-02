@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -95,9 +95,7 @@ const DetailRow = styled.div`
     }
 `;
 
-const Title = styled.h3`
-    
-`;
+const Title = styled.h3``;
 
 const QuadraImage = styled.img`
     width: 100%;
@@ -148,25 +146,37 @@ const Historico = ({ userId }) => {
     const [statusFilter, setStatusFilter] = useState("");
     const [agendamentos, setAgendamentos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+
+    const fetchHistorico = useCallback(async () => {
+        try {
+            setLoading(true);
+            const historico = await buscarHistoricoDoUsuario(userId, page);
+            setAgendamentos((prevAgendamentos) => [
+                ...prevAgendamentos,
+                ...(historico.reservas || []),
+            ]);
+        } catch (error) {
+            console.error("Erro ao carregar histórico do usuário:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [userId, page]);
 
     useEffect(() => {
-        const fetchHistorico = async () => {
-            try {
-                const historico = await buscarHistoricoDoUsuario(userId);
-                setAgendamentos(historico.reservas || []);
-            } catch (error) {
-                console.error("Erro ao carregar histórico do usuário:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchHistorico();
-    }, [userId]);
+    }, [fetchHistorico]);
 
-    const filteredAgendamentos = (
-        Array.isArray(agendamentos) ? agendamentos : []
-    ).filter((agendamento) => {
+    const handleScroll = (e) => {
+        const bottom =
+            e.target.scrollHeight ===
+            e.target.scrollTop + e.target.clientHeight;
+        if (bottom && !loading) {
+            setPage((prevPage) => prevPage + 1);
+        }
+    };
+
+    const filteredAgendamentos = agendamentos.filter((agendamento) => {
         const matchesQuadra =
             quadraFilter === "" || agendamento.quadra_nome === quadraFilter;
         const matchesStatus =
@@ -175,7 +185,7 @@ const Historico = ({ userId }) => {
     });
 
     return (
-        <HistoricoBox>
+        <HistoricoBox onScroll={handleScroll}>
             <HistoricoTitle>Histórico de Agendamentos</HistoricoTitle>
 
             <FiltroContainer>
@@ -199,7 +209,9 @@ const Historico = ({ userId }) => {
                     <option value="Confirmada">Confirmada</option>
                     <option value="Cancelada">Cancelada</option>
                     <option value="Rejeitada">Rejeitada</option>
-                    <option value="Aguardando confirmação">Aguardando confirmação</option>
+                    <option value="Aguardando confirmação">
+                        Aguardando confirmação
+                    </option>
                     <option value="Aula">Aula</option>
                 </FiltroSelect>
             </FiltroContainer>
