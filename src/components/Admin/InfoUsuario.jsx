@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 import EditModal from "./EditModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
-import { buscarUsuarioPorId } from "../../api/usuario";
+import { buscarInformacoesUsuarioCompleto } from "../../api/usuario";
 
 const Container = styled.div`
     display: flex;
@@ -26,6 +26,68 @@ const PerfilCard = styled.div`
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-right: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const PlaceholderImage = styled.img`
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+`;
+
+const InfoList = styled.ul`
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+`;
+
+const InfoItem = styled.li`
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #555;
+
+    span {
+        font-weight: bold;
+        color: #333;
+    }
+`;
+
+const Nome = styled.h1`
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin: 10px 0;
+`;
+
+const OptionsIcon = styled(FontAwesomeIcon)`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+`;
+
+const OptionsMenu = styled(motion.div)`
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+`;
+
+const MenuItem = styled.div`
+    padding: 10px 20px;
+    cursor: pointer;
+    &:hover {
+        background-color: #f0f0f0;
+    }
 `;
 
 const TotalsCard = styled.div`
@@ -55,56 +117,6 @@ const CardValue = styled.p`
     font-weight: bold;
 `;
 
-const InfoList = styled.ul`
-    list-style: none;
-    padding: 0;
-    margin: 0;
-`;
-
-const InfoItem = styled.li`
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-    color: #555;
-    padding-top: 20px;
-
-    span {
-        font-weight: bold;
-        color: #333;
-    }
-`;
-
-const Nome = styled.h1`
-    font-size: 24px;
-    font-weight: bold;
-    color: black;
-    text-align: center;
-`;
-
-const OptionsIcon = styled(FontAwesomeIcon)`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-`;
-
-const OptionsMenu = styled(motion.div)`
-    position: absolute;
-    top: 40px;
-    right: 10px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-`;
-
-const MenuItem = styled.div`
-    padding: 10px 20px;
-    cursor: pointer;
-    &:hover {
-        background-color: #f0f0f0;
-    }
-`;
-
 const InfoUsuario = ({ userId }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -115,7 +127,7 @@ const InfoUsuario = ({ userId }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const data = await buscarUsuarioPorId(userId);
+                const data = await buscarInformacoesUsuarioCompleto(userId);
                 setUserData(data);
             } catch (error) {
                 console.error("Erro ao buscar dados do usuário:", error);
@@ -140,10 +152,12 @@ const InfoUsuario = ({ userId }) => {
     return (
         <Container>
             <PerfilCard>
+                <PlaceholderImage
+                    src="https://via.placeholder.com/120"
+                    alt="Foto do usuário"
+                />
                 <InfoList>
-                    <InfoItem>
-                        <Nome>{userData.nome}</Nome>
-                    </InfoItem>
+                    <Nome>{userData.nome}</Nome>
                     <InfoItem>
                         <span>Email:</span> {userData.email}
                     </InfoItem>
@@ -156,11 +170,7 @@ const InfoUsuario = ({ userId }) => {
                     <InfoItem>
                         <span>Curso:</span> {userData.curso}
                     </InfoItem>
-                    <InfoItem>
-                        <span>Matrícula:</span> {userData.matricula}
-                    </InfoItem>
                 </InfoList>
-
                 <OptionsIcon icon={faEllipsisV} onClick={toggleOptions} />
                 {showOptions && (
                     <OptionsMenu
@@ -181,19 +191,15 @@ const InfoUsuario = ({ userId }) => {
             <TotalsCard>
                 <Card bgColor="#4CAF50">
                     <CardTitle>Total de Agendamentos</CardTitle>
-                    <CardValue>{userData.totalAgendamentos}</CardValue>
+                    <CardValue>{userData.total_agendamentos}</CardValue>
                 </Card>
                 <Card bgColor="#FF9800">
-                    <CardTitle>Total de Cancelamentos</CardTitle>
-                    <CardValue>{userData.totalCancelamentos}</CardValue>
+                    <CardTitle>Total de Bloqueios</CardTitle>
+                    <CardValue>{userData.total_bloqueios}</CardValue>
                 </Card>
                 <Card bgColor="#F44336">
-                    <CardTitle>Total de Rejeitamentos</CardTitle>
-                    <CardValue>{userData.totalRejeitamentos}</CardValue>
-                </Card>
-                <Card bgColor="#2196F3">
-                    <CardTitle>Total de Ocorrências</CardTitle>
-                    <CardValue>{userData.totalOcorrencias}</CardValue>
+                    <CardTitle>Total de Faltas</CardTitle>
+                    <CardValue>{userData.total_faltas}</CardValue>
                 </Card>
             </TotalsCard>
 
