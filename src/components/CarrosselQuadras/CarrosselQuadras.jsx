@@ -42,7 +42,7 @@ const CarouselContainer = styled.div`
     margin: 0 auto;
     overflow: hidden;
     display: flex;
-    justify-content: center; // Centraliza o carrossel
+    justify-content: center;
 `;
 
 const CardsWrapper = styled.div`
@@ -51,10 +51,10 @@ const CardsWrapper = styled.div`
 `;
 
 const CardWrapper = styled.div`
-    flex: 0 0 33.33%; /* Exibe 3 quadras por vez */
+    flex: 0 0 33.33%;
     padding: 10px;
     display: flex;
-    justify-content: center; // Alinhado à esquerda dentro de cada card
+    justify-content: center;
 `;
 
 const ArrowButton = styled.button`
@@ -76,7 +76,7 @@ function CarrosselQuadra({ onQuadraSelect }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [cardsToShow, setCardsToShow] = useState(3); // Começando com 3 quadras visíveis
+    const [cardsToShow, setCardsToShow] = useState(3);
     const [selectedQuadra, setSelectedQuadra] = useState(null);
 
     useEffect(() => {
@@ -110,7 +110,7 @@ function CarrosselQuadra({ onQuadraSelect }) {
     };
 
     const handleCardSelect = (id) => {
-        setSelectedQuadra(id === selectedQuadra ? null : id); // Alterna a seleção
+        setSelectedQuadra(id === selectedQuadra ? null : id);
         onQuadraSelect(id);
     };
 
@@ -148,7 +148,7 @@ function CarrosselQuadra({ onQuadraSelect }) {
                 style={{
                     transform: `translateX(-${
                         (currentIndex * 100) / cardsToShow
-                    }%)`, // Ajuste no cálculo do deslocamento
+                    }%)`,
                 }}
             >
                 {quadras.map((quadra) => (

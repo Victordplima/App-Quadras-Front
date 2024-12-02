@@ -54,10 +54,17 @@ const LinkButton = styled.button`
     cursor: pointer;
 `;
 
+const Loading = styled.div`
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+`;
+
 const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     const [agendamentos, setAgendamentosLocal] = useState([]);
     const [perfilAberto, setPerfilAberto] = useState(false);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const formatarDataHoraUso = (data, horaInicio, horaFim) => {
         const dia = format(new Date(data), "dd/MM");
@@ -76,13 +83,18 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     };
 
     const fetchAgendamentos = useCallback(async () => {
-        try {
-            const reservas = await buscarReservasSemana(quadraId);
-            setAgendamentosLocal(reservas);
-            setAgendamentos(reservas);
-        } catch (error) {
-            console.error("Erro ao buscar agendamentos:", error);
-        }
+        setLoading(true);
+        setTimeout(async () => {
+            try {
+                const reservas = await buscarReservasSemana(quadraId);
+                setAgendamentosLocal(reservas);
+                setAgendamentos(reservas);
+            } catch (error) {
+                console.error("Erro ao buscar agendamentos:", error);
+            } finally {
+                setLoading(false);
+            }
+        });
     }, [quadraId, setAgendamentos]);
 
     useEffect(() => {
@@ -147,7 +159,15 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {agendamentos.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <Td colSpan="7">
+                                    <Loading>
+                                        Carregando agendamentos...
+                                    </Loading>
+                                </Td>
+                            </tr>
+                        ) : agendamentos.length > 0 ? (
                             agendamentos.map((agendamento) => (
                                 <Row key={agendamento.id}>
                                     <Td>{agendamento.matricula}</Td>
