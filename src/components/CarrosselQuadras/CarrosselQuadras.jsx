@@ -1,11 +1,6 @@
-import React from "react";
-import Slider from "react-slick";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faChevronRight,
-    faChevronLeft,
-} from "@fortawesome/free-solid-svg-icons";
+import { buscarQuadras } from "../../api/quadra";
 import QuadraCard from "./QuadraCard";
 import quadraCoberta from "../../assets/Quadra coberta.jpg";
 import quadraDescoberta from "../../assets/Quadra descoberta.jpg";
@@ -15,100 +10,163 @@ import quadraAreia2 from "../../assets/Quadra de areia 2.jpg";
 import quadraAreia3 from "../../assets/Quadra de areia 3.jpg";
 import pistaAtletismo from "../../assets/Pista de atletismo.jpeg";
 
-const CarouselContainer = styled.div`
-    width: 85%;
-    margin: 0 auto;
+// Mapeamento de imagens com base no nome da quadra
+const quadraImages = {
+    "Quadra Coberta": quadraCoberta,
+    "Quadra Descoberta": quadraDescoberta,
+    "Campo de Futebol": campoFutebol,
+    "Quadra de Areia 1": quadraAreia1,
+    "Quadra de Areia 2": quadraAreia2,
+    "Quadra de Areia 3": quadraAreia3,
+    "Pista de Atletismo": pistaAtletismo,
+};
+
+const LoadingMessage = styled.div`
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
     margin-top: 20px;
 `;
 
-const quadras = [
-    {
-        id: "4151eb9f-89d2-491d-815a-f9a0f106c9ed",
-        name: "Quadra Coberta",
-        image: quadraCoberta,
-    },
-    {
-        id: "b9ce2718-6794-4be2-b3d4-96f22f3e7e31",
-        name: "Quadra Descoberta",
-        image: quadraDescoberta,
-    },
-    {
-        id: "3474b0af-dd89-445c-be7d-fe6e1f85a913",
-        name: "Campo de Futebol",
-        image: campoFutebol,
-    },
-    {
-        id: "d21c9bb4-4d40-4beb-a8ea-c68185722dad",
-        name: "Quadra de Areia 1",
-        image: quadraAreia1,
-    },
-    {
-        id: "384cc450-7a14-4174-91aa-7782b5cda22e",
-        name: "Quadra de Areia 2",
-        image: quadraAreia2,
-    },
-    {
-        id: "1db2cb93-79ef-4599-a580-256932a98bb8",
-        name: "Quadra de Areia 3",
-        image: quadraAreia3,
-    },
-    {
-        id: "e0ce9f55-de95-4788-9576-6a53b62dc30a",
-        name: "Pista de Atletismo",
-        image: pistaAtletismo,
-    },
-];
+const ErrorMessage = styled.div`
+    text-align: center;
+    font-size: 1.2rem;
+    color: red;
+    margin-top: 20px;
+`;
 
-function SampleNextArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <div className={className} onClick={onClick}>
-            <FontAwesomeIcon
-                icon={faChevronRight}
-                style={{ color: "#000", fontSize: "24px" }}
-            />
-        </div>
-    );
-}
+const CarouselContainer = styled.div`
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; // Centraliza o carrossel
+`;
 
-function SamplePrevArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <div className={className} onClick={onClick}>
-            <FontAwesomeIcon
-                icon={faChevronLeft}
-                style={{ color: "#000", fontSize: "24px" }}
-            />
-        </div>
-    );
-}
+const CardsWrapper = styled.div`
+    display: flex;
+    transition: transform 0.3s ease;
+`;
 
-function CarouselQuadras({ onQuadraSelect }) {
-    const settings = {
-        dots: false,
-        infinite: false,
-        speed: 500,
-        slidesToScroll: 1,
-        slidesToShow: 4,
-        nextArrow: <SampleNextArrow />,
-        prevArrow: <SamplePrevArrow />,
+const CardWrapper = styled.div`
+    flex: 0 0 33.33%; /* Exibe 3 quadras por vez */
+    padding: 10px;
+    display: flex;
+    justify-content: center; // Alinhado à esquerda dentro de cada card
+`;
+
+const ArrowButton = styled.button`
+    position: absolute;
+    top: 50%;
+    ${({ direction }) => (direction === "left" ? "left: 0px;" : "right: 0px;")}
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    transform: translateY(-50%);
+    z-index: 1;
+`;
+
+function CarrosselQuadra({ onQuadraSelect }) {
+    const [quadras, setQuadras] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [cardsToShow, setCardsToShow] = useState(3); // Começando com 3 quadras visíveis
+    const [selectedQuadra, setSelectedQuadra] = useState(null);
+
+    useEffect(() => {
+        const carregarQuadras = async () => {
+            try {
+                setLoading(true);
+                const quadrasData = await buscarQuadras();
+                setQuadras(quadrasData);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        carregarQuadras();
+    }, []);
+
+    const handleNext = () => {
+        setCurrentIndex((prevIndex) => {
+            const maxIndex = Math.max(0, quadras.length - cardsToShow);
+            return prevIndex + 1 > maxIndex ? 0 : prevIndex + 1;
+        });
     };
+
+    const handlePrev = () => {
+        setCurrentIndex((prevIndex) => {
+            const maxIndex = Math.max(0, quadras.length - cardsToShow);
+            return prevIndex - 1 < 0 ? maxIndex : prevIndex - 1;
+        });
+    };
+
+    const handleCardSelect = (id) => {
+        setSelectedQuadra(id === selectedQuadra ? null : id); // Alterna a seleção
+        onQuadraSelect(id);
+    };
+
+    useEffect(() => {
+        const updateCardsToShow = () => {
+            if (window.innerWidth < 480) {
+                setCardsToShow(1); // Exibe 1 quadra em telas pequenas
+            } else if (window.innerWidth < 768) {
+                setCardsToShow(2); // Exibe 2 quadras em telas médias
+            } else {
+                setCardsToShow(3); // Exibe 3 quadras por vez em telas grandes
+            }
+        };
+
+        window.addEventListener("resize", updateCardsToShow);
+        updateCardsToShow();
+
+        return () => window.removeEventListener("resize", updateCardsToShow);
+    }, []);
+
+    if (loading) {
+        return <LoadingMessage>Carregando quadras...</LoadingMessage>;
+    }
+
+    if (error) {
+        return <ErrorMessage>Erro: {error}</ErrorMessage>;
+    }
 
     return (
         <CarouselContainer>
-            <Slider {...settings}>
+            <ArrowButton direction="left" onClick={handlePrev}>
+                &lt;
+            </ArrowButton>
+            <CardsWrapper
+                style={{
+                    transform: `translateX(-${
+                        (currentIndex * 100) / cardsToShow
+                    }%)`, // Ajuste no cálculo do deslocamento
+                }}
+            >
                 {quadras.map((quadra) => (
-                    <div key={quadra.id}>
+                    <CardWrapper key={quadra.id}>
                         <QuadraCard
-                            image={quadra.image}
-                            name={quadra.name}
-                            onClick={() => onQuadraSelect(quadra.id)}
+                            image={quadraImages[quadra.nome]}
+                            name={quadra.nome}
+                            isSelected={quadra.id === selectedQuadra}
+                            onClick={() => handleCardSelect(quadra.id)}
                         />
-                    </div>
+                    </CardWrapper>
                 ))}
-            </Slider>
+            </CardsWrapper>
+            <ArrowButton direction="right" onClick={handleNext}>
+                &gt;
+            </ArrowButton>
         </CarouselContainer>
     );
 }
 
-export default CarouselQuadras;
+export default CarrosselQuadra;
