@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import QuadraCards from "../../components/Alunos/QuadraCards";
+import CarrosselQuadra from "../../components/Alunos/CarrosselQuadras";
 import DiaCard from "../../components/Alunos/DiaCard";
 import HorarioCard from "../../components/Alunos/HorarioCard";
 import ModalEsporte from "../../components/Alunos/ModalAgendamentos/ModalEsporte";
 import ModalTermos from "../../components/Alunos/ModalAgendamentos/ModalTermos";
 import ModalConfirmacao from "../../components/Alunos/ModalAgendamentos/ModalConfirmacao";
-import Header from "../../components/Alunos/Header"
+import Header from "../../components/Alunos/Header";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -79,10 +79,8 @@ const Agendamento = () => {
         <Container>
             <Header />
             <Title>Selecione uma quadra</Title>
-            <QuadraCards
-                setSelectedQuadra={setSelectedQuadra}
-                selectedQuadra={selectedQuadra}
-            />
+            {/* Substituindo o QuadraCards pelo CarrosselQuadra */}
+            <CarrosselQuadra onQuadraSelect={setSelectedQuadra} />
 
             <h3>Selecione o dia</h3>
             <DiaCard
