@@ -58,8 +58,10 @@ export const buscarReservasUsuario = async (
         const response = await api.get(`/reservas/usuario/${usuarioId}`, {
             params: { page, limit, quadra },
         });
+
         return response.data;
     } catch (error) {
+        console.error("Erro na requisição:", error);
         throw new Error(
             error.response?.data?.message ||
                 "Erro ao buscar reservas do usuário"
@@ -127,6 +129,23 @@ export const buscarReservasDiaSemOcorrencia = async () => {
         throw new Error(
             error.response?.data?.message ||
                 "Erro ao buscar reservas do dia sem ocorrencia"
+        );
+    }
+};
+
+
+
+export const cancelarReserva = async (reservaId) => {
+    try {
+        const response = await api.put(`/reservas/${reservaId}/cancelar`);
+
+        emitirEvento("atualizarReservas", { mensagem: "Reserva cancelada com sucesso" });
+
+        return response.data;
+    } catch (error) {
+        console.error("Erro na requisição para cancelar reserva:", error);
+        throw new Error(
+            error.response?.data?.mensagem || "Erro ao cancelar a reserva"
         );
     }
 };

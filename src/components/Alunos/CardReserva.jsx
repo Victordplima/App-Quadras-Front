@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faCircleMinus } from "@fortawesome/free-solid-svg-icons";
 import ModalConfirmacao from "./ModalConfirmacao";
-import { faCircleMinus } from "@fortawesome/free-solid-svg-icons";
 
 import quadraAreia3 from "../../assets/Quadra de areia 3.jpg";
 import campoFutebol from "../../assets/Campo de futebol.jpg";
@@ -14,6 +13,7 @@ import quadraDescoberta from "../../assets/Quadra descoberta.jpg";
 import quadraAreia1 from "../../assets/Quadra de areia 1.jpg";
 import pistaAtletismo from "../../assets/Pista de atletismo.jpeg";
 
+// Mapeamento das imagens das quadras
 const quadraImages = {
     "Quadra de Areia 3": quadraAreia3,
     "Campo de Futebol": campoFutebol,
@@ -24,9 +24,45 @@ const quadraImages = {
     "Pista de Atletismo": pistaAtletismo,
 };
 
+// Função para obter as cores de fundo conforme o status
+const getStatusColor = (status) => {
+    switch (status) {
+        case "Confirmada":
+            return "#90ee90";
+        case "Cancelada":
+            return "#d3d3d3";
+        case "Rejeitada":
+            return "#ffcccb";
+        case "Aguardando confirmação":
+            return "#ffe5b4";
+        case "Aula":
+            return "#add8e6";
+        default:
+            return "#fff";
+    }
+};
+
+// Função para obter as cores do texto do status
+const getStatusTagColor = (status) => {
+    switch (status) {
+        case "Confirmada":
+            return "#28a745";
+        case "Cancelada":
+            return "#6c757d";
+        case "Rejeitada":
+            return "#dc3545";
+        case "Aguardando confirmação":
+            return "#ffc107";
+        case "Aula":
+            return "#007bff";
+        default:
+            return "#000";
+    }
+};
+
 const Card = styled(motion.div)`
     width: 320px;
-    background-color: #f9f9f9;
+    background-color: ${(props) => getStatusColor(props.status)};
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
@@ -123,12 +159,7 @@ const Status = styled.p`
     font-size: 0.9rem;
     font-weight: bold;
     margin-top: 10px;
-    color: ${(props) =>
-        props.status === "Aprovado"
-            ? "green"
-            : props.status === "Rejeitado"
-            ? "red"
-            : "#f39c12"};
+    color: ${(props) => getStatusTagColor(props.status)};
 `;
 
 const Footer = styled.div`
@@ -178,6 +209,7 @@ const CardReserva = ({ reserva }) => {
 
     return (
         <Card
+            status={reserva.status}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}

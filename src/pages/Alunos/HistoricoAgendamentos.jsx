@@ -26,19 +26,27 @@ const CardList = styled.div`
 `;
 
 const HistoricoAgendamentos = () => {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line
     const [reservas, setReservas] = useState([]);
     const [ativos, setAtivos] = useState([]);
     const [antigos, setAntigos] = useState([]);
-    const usuarioId = localStorage.getItem("usuarioId");
+
+    const usuario = JSON.parse(localStorage.getItem("user"));
+    const usuarioId = usuario ? usuario.id : null;
 
     useEffect(() => {
-        const fetchReservas = async () => {
+        const fetchReservas = async (page = 1) => {
             try {
-                const data = await buscarReservasUsuario(usuarioId);
+                if (!usuarioId) {
+                    console.error("Usuário não autenticado.");
+                    return;
+                }
+
+                const data = await buscarReservasUsuario(usuarioId, page);
+                console.log("Dados das reservas:", data);
 
                 if (Array.isArray(data)) {
-                    setReservas(data);
+                    setReservas((prevData) => [...prevData, ...data]);
 
                     const reservasAtivas = data.filter(
                         (reserva) => new Date(reserva.data) > new Date()
@@ -49,17 +57,19 @@ const HistoricoAgendamentos = () => {
 
                     setAtivos(reservasAtivas);
                     setAntigos(reservasAntigas);
+
+                    if (data.length === 10) {
+                        fetchReservas(page + 1);
+                    }
+                } else {
+                    console.error("A resposta não é um array", data);
                 }
             } catch (error) {
                 console.error("Erro ao buscar reservas:", error);
             }
         };
 
-        if (usuarioId) {
-            fetchReservas();
-        } else {
-            console.error("Usuário não autenticado.");
-        }
+        fetchReservas();
     }, [usuarioId]);
 
     return (

@@ -1,34 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-
-const ModalConfirmacao = ({ reserva, onClose }) => {
-    const handleOverlayClick = (e) => {
-        if (e.target === e.currentTarget) {
-            onClose();
-        }
-    };
-
-    const handleConfirmarCancelamento = () => {
-        console.log(`Reserva cancelada: ${reserva.id}`);
-        onClose();
-    };
-
-    return (
-        <ModalOverlay onClick={handleOverlayClick}>
-            <ModalContent>
-                <h3>Tem certeza que deseja cancelar?</h3>
-                <p>Quadra: {reserva.quadra_nome}</p>
-                <p>Data e Hora: {reserva.data_agendada}</p>
-                <Buttons>
-                    <ButtonCancelar onClick={onClose}>Cancelar</ButtonCancelar>
-                    <ButtonConfirmar onClick={handleConfirmarCancelamento}>
-                        Confirmar
-                    </ButtonConfirmar>
-                </Buttons>
-            </ModalContent>
-        </ModalOverlay>
-    );
-};
+import { toast } from "react-toastify";
+import { cancelarReserva } from "../../api/reserva";
 
 const ModalOverlay = styled.div`
     position: fixed;
@@ -40,7 +13,7 @@ const ModalOverlay = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Garante que o modal fique acima de todos os elementos */
+    z-index: 1000;
 `;
 
 const ModalContent = styled.div`
@@ -87,5 +60,42 @@ const ButtonConfirmar = styled.button`
         background-color: #e04343;
     }
 `;
+
+const ModalConfirmacao = ({ reserva, onClose, onReservaCancelada }) => {
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
+    const handleConfirmarCancelamento = async () => {
+        try {
+            console.log(reserva.id)
+            await cancelarReserva(reserva.id);
+            toast.success("Reserva cancelada com sucesso!");
+            onClose();
+        } catch (error) {
+            console.error("Erro ao cancelar a reserva:", error);
+            toast.error("Erro ao cancelar a reserva. Tente novamente!");
+            onClose();
+        }
+    };
+
+    return (
+        <ModalOverlay onClick={handleOverlayClick}>
+            <ModalContent>
+                <h3>Tem certeza que deseja cancelar?</h3>
+                <p>Quadra: {reserva.quadra_nome}</p>
+                <p>Data e Hora: {reserva.data_agendada}</p>
+                <Buttons>
+                    <ButtonCancelar onClick={onClose}>Cancelar</ButtonCancelar>
+                    <ButtonConfirmar onClick={handleConfirmarCancelamento}>
+                        Confirmar
+                    </ButtonConfirmar>
+                </Buttons>
+            </ModalContent>
+        </ModalOverlay>
+    );
+};
 
 export default ModalConfirmacao;
