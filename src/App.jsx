@@ -11,19 +11,19 @@ import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// admin
+// Admin
 import TelaInicioAdmin from "./pages/Admin/TelaInicio";
 import Login from "./pages/Login";
 import PerfilUsuario from "./pages/Admin/PerfilUsuario";
 import TelaOcorrencias from "./pages/Admin/TelaOcorrencias";
 import GerenciarUsuario from "./pages/Admin/GerenciarUsuario";
 
-// alunos e atléticas
+// Alunos e Atléticas
 import Agendar from "./pages/Alunos/Agendamento";
 import FAQ from "./pages/Alunos/FAQ";
 import HistoricoAgendamentos from "./pages/Alunos/HistoricoAgendamentos";
 
-// supervisão
+// Supervisão
 import SupervisaoAgendamentos from "./pages/Supervisao/SupervisaoAgendamentos";
 import VerificacaoTela from "./pages/Supervisao/VerificacaoTela";
 
@@ -34,8 +34,8 @@ function App() {
 
     return (
         <Router>
-            <ToastContainer />
             <GlobalStyle />
+            <ToastContainer /> {/* Colocando o ToastContainer aqui */}
             <Routes>
                 {/* Redirecionamento baseado no role do usuário */}
                 <Route
