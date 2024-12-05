@@ -52,7 +52,7 @@ const TermsContainer = styled.div`
     max-height: 200px;
     overflow-y: scroll;
     padding: 10px;
-    background-color: #f9f9f9;
+    background-color: #e0e0e0;
     border-radius: 8px;
     margin-bottom: 20px;
     text-align: left;
@@ -120,13 +120,11 @@ const ModalTermos = ({
             return;
         }
 
-        const user = JSON.parse(localStorage.getItem("user")); // Fazendo o parse do objeto
-        const usuarioId = user ? user.id : null; // Acessando o id, com verificação se o usuário existe
+        const user = JSON.parse(localStorage.getItem("user"));
+        const usuarioId = user ? user.id : null;
 
-        // Separando hora e minutos de selectedTime
         const [horaInicio, minutoInicio] = selectedTime.split(":").map(Number);
 
-        // Criando a data de início em UTC
         const dataInicio = new Date(
             Date.UTC(
                 selectedDay.getFullYear(),

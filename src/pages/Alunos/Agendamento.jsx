@@ -79,7 +79,6 @@ const Agendamento = () => {
         <Container>
             <Header />
             <Title>Selecione uma quadra</Title>
-            {/* Substituindo o QuadraCards pelo CarrosselQuadra */}
             <CarrosselQuadra onQuadraSelect={setSelectedQuadra} />
 
             <h3>Selecione o dia</h3>
