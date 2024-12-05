@@ -31,11 +31,17 @@ const PerfilCard = styled.div`
     align-items: center;
 `;
 
-const PlaceholderImage = styled.img`
+const Avatar = styled.div`
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    object-fit: cover;
+    background-color: #00bfff;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
     margin-bottom: 20px;
     border: 2px solid #ddd;
 `;
@@ -149,13 +155,12 @@ const InfoUsuario = ({ userId }) => {
         return <p>Carregando...</p>;
     }
 
+    const userInitial = userData.nome ? userData.nome[0].toUpperCase() : "A";
+
     return (
         <Container>
             <PerfilCard>
-                <PlaceholderImage
-                    src="https://via.placeholder.com/120"
-                    alt="Foto do usuário"
-                />
+                <Avatar>{userInitial}</Avatar>
                 <InfoList>
                     <Nome>{userData.nome}</Nome>
                     <InfoItem>

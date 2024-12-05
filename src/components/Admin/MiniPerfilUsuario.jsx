@@ -24,7 +24,12 @@ const PerfilContainer = styled.div`
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     position: relative;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 `;
+
 
 const CloseButton = styled.button`
     background: none;
@@ -45,19 +50,28 @@ const InfoItem = styled.div`
     margin-bottom: 10px;
     font-size: 16px;
     text-align: center;
+`;
+
+const InfoItemBold = styled.div`
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
     font-weight: bold;
 `;
+
 
 const ProfileImage = styled.div`
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #ccc;
-    margin-bottom: 20px;
-    background-image: url("https://via.placeholder.com/80");
+    background-color: #00bfff;
     background-size: cover;
     background-position: center;
-    margin: 0 auto;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
 `;
 
 const StatContainer = styled.div`
@@ -68,6 +82,7 @@ const StatContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: center;
 `;
 
 const StatItem = styled.div`
@@ -155,8 +170,12 @@ const MiniPerfilUsuario = ({ userId, onClose }) => {
                     <p>{error}</p>
                 ) : usuario ? (
                     <>
-                        <ProfileImage />
-                        <InfoItem>{usuario.nome}</InfoItem>
+                        <ProfileImage>
+                            {usuario.nome
+                                ? usuario.nome.charAt(0).toUpperCase()
+                                : ""}
+                        </ProfileImage>
+                        <InfoItemBold>{usuario.nome}</InfoItemBold>
                         <InfoItem>{usuario.telefone}</InfoItem>
                         <InfoItem>{usuario.curso}</InfoItem>
                         <InfoItem>{usuario.matricula}</InfoItem>
