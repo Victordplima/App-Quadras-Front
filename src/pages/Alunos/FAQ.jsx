@@ -51,7 +51,15 @@ const faqs = [
     },
     {
         question: "Posso cancelar o agendamento?",
-        answer: "Sim, você pode cancelar seu agendamento até 24 horas antes do horário reservado.",
+        answer: "Sim, você pode cancelar seu agendamento até 5 dias antes do horário reservado, caso cancele depois, você sofrerá um bloqueio de uma semana.",
+    },
+    {
+        question: "Como eu faço para agendar um horário ou quadra que não está listado?",
+        answer: "Nesse caso, você deverá enviar um email para email@exemplo.com.",
+    },
+    {
+        question: "Como eu faço para recorrer a um bloqueio?",
+        answer: "Você deverá enviar um email para email@exemplo.com explicando o problema ocorrido.",
     },
 ];
 
