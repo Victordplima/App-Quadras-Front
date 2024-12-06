@@ -13,8 +13,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-
-
 // Interceptor para capturar erros e redirecionar para o login se o token expirar
 api.interceptors.response.use(
     (response) => response, // Para respostas bem-sucedidas, apenas retorna a resposta
@@ -23,7 +21,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Remove o token do armazenamento local
             localStorage.removeItem("token");
-            
+
             // Redireciona para a página de login
             window.location.href = "/login";
         }
@@ -33,12 +31,15 @@ api.interceptors.response.use(
     }
 );
 
-
 export const criarReserva = async (reservaData) => {
     try {
         const response = await api.post("/reservas", reservaData);
-        
-        emitirEvento("atualizarReservas", { mensagem: "Nova reserva criada" });
+
+        // Emitir evento para todos os clientes conectados após criar a reserva
+        emitirEvento("atualizarReservas", {
+            mensagem: "Nova reserva criada",
+            reserva: response.data,
+        });
 
         return response.data;
     } catch (error) {
@@ -47,8 +48,6 @@ export const criarReserva = async (reservaData) => {
         );
     }
 };
-
-
 
 export const buscarReservasSemana = async (quadraId) => {
     try {
@@ -64,8 +63,6 @@ export const buscarReservasSemana = async (quadraId) => {
         );
     }
 };
-
-
 
 export const buscarReservasUsuario = async (
     usuarioId,
@@ -88,27 +85,28 @@ export const buscarReservasUsuario = async (
     }
 };
 
-
-
 export const alterarStatusReserva = async (reservaId, status) => {
     try {
         const response = await api.put(`/reservas/status/${reservaId}`, {
             status: status,
         });
 
-        emitirEvento("atualizarReservas", { mensagem: "Status da reserva atualizado" });
+        // Emitir evento para todos os clientes conectados após alterar o status
+        emitirEvento("atualizarReservas", {
+            mensagem: "Status da reserva atualizado",
+            reservaId,
+            status,
+        });
 
         return response.data;
     } catch (error) {
         console.error("Erro na requisição para alterar status:", error);
         throw new Error(
             error.response?.data?.message ||
-            "Erro ao alterar o status da reserva"
+                "Erro ao alterar o status da reserva"
         );
     }
 };
-
-
 
 export const buscarAgendamentosDia = async (quadraId, data) => {
     try {
@@ -122,9 +120,7 @@ export const buscarAgendamentosDia = async (quadraId, data) => {
                 "Erro ao buscar agendamentos do dia"
         );
     }
-}
-
-
+};
 
 export const buscarReservasDia = async () => {
     try {
@@ -132,13 +128,10 @@ export const buscarReservasDia = async () => {
         return response.data;
     } catch (error) {
         throw new Error(
-            error.response?.data?.message ||
-                "Erro ao buscar reservas do dia"
+            error.response?.data?.message || "Erro ao buscar reservas do dia"
         );
     }
 };
-
-
 
 export const buscarReservasDiaSemOcorrencia = async () => {
     try {
@@ -152,13 +145,15 @@ export const buscarReservasDiaSemOcorrencia = async () => {
     }
 };
 
-
-
 export const cancelarReserva = async (reservaId) => {
     try {
         const response = await api.put(`/reservas/${reservaId}/cancelar`);
 
-        emitirEvento("atualizarReservas", { mensagem: "Reserva cancelada com sucesso" });
+        // Emitir evento para todos os clientes conectados após cancelar a reserva
+        emitirEvento("atualizarReservas", {
+            mensagem: "Reserva cancelada com sucesso",
+            reservaId,
+        });
 
         return response.data;
     } catch (error) {
