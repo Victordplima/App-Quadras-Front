@@ -200,59 +200,47 @@ const CardReserva = ({ reserva }) => {
             "sexta-feira",
             "sábado",
         ];
-        return `${date.getDate().toString().padStart(2, "0")}/${(
-            date.getMonth() + 1
-        )
-            .toString()
-            .padStart(2, "0")} (${diasSemana[date.getDay()]})`;
+        return `${diasSemana[date.getDay()]}, ${date.toLocaleDateString(
+            "pt-BR"
+        )}`;
     };
 
+    // Verificações de segurança para evitar erros de undefined
+    const nomeQuadra = reserva.quadra_nome || "Quadra desconhecida";
+    const nomeUsuario = reserva.usuario_id || "Usuário desconhecido";
+
     return (
-        <Card
-            status={reserva.status}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-        >
+        <Card status={reserva.status}>
             <ImageSection>
                 <QuadraImage
-                    src={
-                        quadraImages[reserva.quadra_nome] ||
-                        "/path/to/default-image.jpg"
-                    }
-                    alt={reserva.quadra_nome}
+                    src={quadraImages[nomeQuadra] || ""} // Garantir imagem padrão
+                    alt={nomeQuadra}
                 />
             </ImageSection>
+
             <Content>
                 <Header>
-                    <NomeQuadra>{reserva.quadra_nome}</NomeQuadra>
-                    <Options>
-                        <FontAwesomeIcon
-                            icon={faEllipsisV}
-                            className="icon"
-                            onClick={toggleDropdown}
-                        />
-                        <AnimatePresence>
+                    <NomeQuadra>{nomeQuadra}</NomeQuadra>
+                    {(reserva.status === "Aguardando confirmação" ||
+                        reserva.status === "Confirmada") && (
+                        <Options>
+                            <FontAwesomeIcon
+                                icon={faEllipsisV}
+                                className="icon"
+                                onClick={toggleDropdown}
+                            />
                             {isDropdownOpen && (
-                                <motion.div
-                                    className="dropdown"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                >
+                                <div className="dropdown">
                                     <button onClick={handleCancelarReserva}>
-                                        <FontAwesomeIcon
-                                            icon={faCircleMinus}
-                                            style={{ marginRight: "8px" }}
-                                        />
+                                        <FontAwesomeIcon icon={faCircleMinus} />
                                         Cancelar
                                     </button>
-                                </motion.div>
+                                </div>
                             )}
-                        </AnimatePresence>
-                    </Options>
+                        </Options>
+                    )}
                 </Header>
+
                 <Details>
                     <p>Data: {formatarData(reserva.data)}</p>
                     <p>
@@ -260,19 +248,20 @@ const CardReserva = ({ reserva }) => {
                     </p>
                     <Status status={reserva.status}>{reserva.status}</Status>
                 </Details>
+
                 <Footer>
-                    <p>
-                        Agendado em: {formatarData(reserva.data_criacao)} às{" "}
-                        {reserva.hora_criacao}
-                    </p>
+                    <p>Agendado por: {nomeUsuario}</p>
                 </Footer>
             </Content>
-            {isModalOpen && (
-                <ModalConfirmacao
-                    reserva={reserva}
-                    onClose={() => setModalOpen(false)}
-                />
-            )}
+
+            <AnimatePresence>
+                {isModalOpen && (
+                    <ModalConfirmacao
+                        reservaId={reserva.id}
+                        setModalOpen={setModalOpen}
+                    />
+                )}
+            </AnimatePresence>
         </Card>
     );
 };
