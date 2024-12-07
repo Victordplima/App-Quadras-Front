@@ -158,10 +158,9 @@ const Bloqueios = ({ userId }) => {
         setMostrarModalEditar(false);
     };
 
-    // Função chamada ao clicar no botão de editar
     const handleEditarBloqueio = (bloqueio) => {
-        setNovoBloqueio(bloqueio); // Define o bloqueio a ser editado no estado
-        setMostrarModalEditar(true); // Exibe o modal de edição
+        setNovoBloqueio(bloqueio);
+        setMostrarModalEditar(true);
     };
 
     return (
@@ -178,7 +177,7 @@ const Bloqueios = ({ userId }) => {
                         Motivo: {bloqueioAtivo.motivo}
                     </>
                 ) : (
-                    <>Você não possui bloqueios ativos.</>
+                    <>O usuário não possui bloqueios ativos.</>
                 )}
             </StatusBloqueio>
 
