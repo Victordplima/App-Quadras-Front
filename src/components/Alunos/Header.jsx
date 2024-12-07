@@ -156,7 +156,7 @@ const Header = () => {
                 <MenuToggle onClick={handleMenuToggle}>
                     <FontAwesomeIcon
                         icon={isMenuOpen ? faTimes : faBars}
-                        size="1.5x"
+                        size="1x"
                     />
                 </MenuToggle>
                 <LogoContainer as={Link} to="/agendar">
