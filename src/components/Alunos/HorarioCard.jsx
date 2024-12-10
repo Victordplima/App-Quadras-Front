@@ -66,11 +66,9 @@ const HorarioCard = ({ selectedQuadra, selectedDay, setSelectedTime }) => {
                         selectedQuadra,
                         formattedDate
                     );
-                    console.log("Reservas recebidas:", reservas);
 
                     const horariosAtualizados = horariosDisponiveis.map(
                         (hora) => {
-                            console.log("Verificando horário:", hora);
 
                             const ocupado = reservas.some((reserva) => {
                                 if (
@@ -79,15 +77,10 @@ const HorarioCard = ({ selectedQuadra, selectedDay, setSelectedTime }) => {
                                 ) {
                                     const horaReserva =
                                         reserva.hora_inicio.slice(0, 5); // pega a parte da hora: MM:SS
-                                    console.log(
-                                        `Comparando: ${hora} com ${horaReserva}`
-                                    );
                                     return horaReserva === hora; // compare as horas no formato HH:MM
                                 }
                                 return false;
                             });
-
-                            console.log(`Horário ${hora} ocupado:`, ocupado);
 
                             return {
                                 hora,

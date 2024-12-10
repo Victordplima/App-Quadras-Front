@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import styled from "styled-components";
 import { buscarReservasSemana, alterarStatusReserva } from "../../api/reserva";
 import { format } from "date-fns";
@@ -65,36 +65,43 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     const [perfilAberto, setPerfilAberto] = useState(false);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const [loading, setLoading] = useState(false);
+    const tbodyRef = useRef(null);
+    // eslint-disable-next-line
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     const formatarDataHoraUso = (data, horaInicio, horaFim) => {
         const dia = format(new Date(data), "dd/MM");
         const horaInicial = format(
-            new Date(`1970-01-01T${horaInicio}Z`),
+            new Date(`1970-01-01T${horaInicio}`),
             "HH:mm"
         );
-        const horaFinal = format(new Date(`1970-01-01T${horaFim}Z`), "HH:mm");
+        const horaFinal = format(new Date(`1970-01-01T${horaFim}`), "HH:mm");
         return `${dia} | ${horaInicial} - ${horaFinal}`;
     };
 
     const formatarDataHoraPedido = (data, hora) => {
         const diaMes = format(new Date(data), "dd/MM");
-        const horaFormatada = format(new Date(`1970-01-01T${hora}Z`), "HH:mm");
+        const horaFormatada = format(new Date(`1970-01-01T${hora}`), "HH:mm");
         return `${diaMes} | ${horaFormatada}`;
     };
 
     const fetchAgendamentos = useCallback(async () => {
         setLoading(true);
-        setTimeout(async () => {
-            try {
-                const reservas = await buscarReservasSemana(quadraId);
-                setAgendamentosLocal(reservas);
-                setAgendamentos(reservas);
-            } catch (error) {
-                console.error("Erro ao buscar agendamentos:", error);
-            } finally {
-                setLoading(false);
-            }
-        });
+        // Salvar a posição do scroll antes de fazer a requisição
+        const currentScrollPosition = tbodyRef.current.scrollTop;
+        setScrollPosition(currentScrollPosition);
+
+        try {
+            const reservas = await buscarReservasSemana(quadraId);
+            setAgendamentosLocal(reservas);
+            setAgendamentos(reservas);
+        } catch (error) {
+            console.error("Erro ao buscar agendamentos:", error);
+        } finally {
+            setLoading(false);
+            // Restaurar a posição do scroll após a atualização
+            tbodyRef.current.scrollTop = currentScrollPosition;
+        }
     }, [quadraId, setAgendamentos]);
 
     useEffect(() => {
@@ -117,6 +124,10 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     }, [fetchAgendamentos]);
 
     const handleStatusUpdate = async (reservaId, novoStatus) => {
+        // Salvar a posição do scroll antes de atualizar os agendamentos
+        const currentScrollPosition = tbodyRef.current.scrollTop;
+        setScrollPosition(currentScrollPosition);
+
         try {
             await alterarStatusReserva(reservaId, novoStatus);
             setAgendamentosLocal((prevAgendamentos) =>
@@ -130,6 +141,9 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         } catch (error) {
             console.error("Erro ao atualizar status:", error.message);
             toast.error("Erro ao atualizar status da reserva.");
+        } finally {
+            // Restaurar a posição do scroll após a atualização
+            tbodyRef.current.scrollTop = currentScrollPosition;
         }
     };
 
@@ -158,7 +172,7 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
                             <Th>Ações</Th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody ref={tbodyRef}>
                         {loading ? (
                             <tr>
                                 <Td colSpan="7">

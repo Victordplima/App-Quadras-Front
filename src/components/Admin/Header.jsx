@@ -10,6 +10,8 @@ import logoImage from "../../assets/Logo 1.png";
 import Sidebar from "./Sidebar";
 import { Link, useNavigate } from "react-router-dom";
 
+const HEADER_HEIGHT = 60; // Defina a altura fixa do header
+
 const HeaderContainer = styled.header`
     display: flex;
     align-items: center;
@@ -20,7 +22,7 @@ const HeaderContainer = styled.header`
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: ${HEADER_HEIGHT}px;
     z-index: 1000;
 `;
 
@@ -105,7 +107,11 @@ const MenuToggle = styled.button`
     z-index: 1001;
 `;
 
-const Header = () => {
+const ContentWrapper = styled.main`
+    margin-top: ${HEADER_HEIGHT}px; // Certifica-se de que o conteúdo comece abaixo do header
+`;
+
+const Header = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [user, setUser] = useState(null);
@@ -201,6 +207,7 @@ const Header = () => {
                 </AvatarContainer>
             </HeaderContainer>
             <Sidebar isOpen={isMenuOpen} sidebarRef={sidebarRef} />
+            <ContentWrapper>{children}</ContentWrapper>
         </>
     );
 };

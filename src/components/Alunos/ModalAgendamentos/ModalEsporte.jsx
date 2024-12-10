@@ -62,7 +62,6 @@ const ModalEsporte = ({ quadraId, onClose, onNext }) => {
         const fetchEsportes = async () => {
             try {
                 const data = await buscarEsportesPorQuadraId(quadraId);
-                console.log("Esportes recebidos:", data);
                 setEsportes(data);
             } catch (error) {
                 console.error("Erro ao buscar esportes:", error.message);
