@@ -14,7 +14,7 @@ const ButtonWrapper = styled.div`
 
 const Button = styled.button`
     padding: 10px 20px;
-    background-color: #4caf50;
+    background-color: #1e99c0;
     color: white;
     border: none;
     border-radius: 5px;
@@ -23,12 +23,13 @@ const Button = styled.button`
     transition: background-color 0.3s;
 
     &:hover {
-        background-color: #45a049;
+        background-color: #177491;
     }
 `;
 
 const ModalTitle = styled.h2`
     text-align: center;
+    padding-bottom: 22px;
 `;
 
 const ModalContent = styled.div`
@@ -66,7 +67,7 @@ const BotaoSalvar = styled.button`
     padding: 10px 15px;
     font-size: 16px;
     color: #fff;
-    background-color: #28a745;
+    background-color: #1e99c0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -74,8 +75,18 @@ const BotaoSalvar = styled.button`
     transition: background-color 0.3s;
 
     &:hover {
-        background-color: #218838;
+        background-color: #177491;
     }
+`;
+
+const HoraFimLabel = styled.div`
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+    font-weight: bold;
 `;
 
 Modal.setAppElement("#root");
@@ -142,6 +153,19 @@ function CriarReserva() {
         }));
     };
 
+    // Função para calcular e definir a hora de fim
+    const handleHoraInicioChange = (e) => {
+        const { value } = e.target;
+        setReservaData((prevData) => {
+            const horaFim = horarios.find((hora) => hora > value); // Hora de fim automaticamente
+            return {
+                ...prevData,
+                horaInicio: value,
+                horaFim: horaFim || "",
+            };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -155,14 +179,10 @@ function CriarReserva() {
             toast.error("Por favor, preencha todos os campos.");
             return;
         }
-
-        const horaFim = horarios.find((hora) => hora > reservaData.horaInicio);
+    
         const reservaComHoraFim = {
             ...reservaData,
-            horaFim: horaFim || "",
         };
-    
-        console.log("Dados da reserva a ser enviada:", reservaComHoraFim);
     
         try {
             const novaReserva = await criarReservaAdmin(reservaComHoraFim);
@@ -251,7 +271,7 @@ function CriarReserva() {
                         <Select
                             name="horaInicio"
                             value={reservaData.horaInicio}
-                            onChange={handleInputChange}
+                            onChange={handleHoraInicioChange}
                         >
                             <Option value="">Selecione a hora de início</Option>
                             {horarios.map((hora) => (
@@ -261,19 +281,12 @@ function CriarReserva() {
                             ))}
                         </Select>
 
-                        <Select
-                            name="horaFim"
-                            value={reservaData.horaFim}
-                            onChange={handleInputChange}
-                            disabled
-                        >
-                            <Option value="">Hora de fim</Option>
-                            {reservaData.horaFim && (
-                                <Option value={reservaData.horaFim}>
-                                    {reservaData.horaFim}
-                                </Option>
-                            )}
-                        </Select>
+                        {/* Exibe a hora de fim como um campo não editável */}
+                        {reservaData.horaFim && (
+                            <HoraFimLabel>
+                                Hora de fim: {reservaData.horaFim}
+                            </HoraFimLabel>
+                        )}
 
                         <BotaoSalvar type="submit">Criar Reserva</BotaoSalvar>
                     </FormContainer>
