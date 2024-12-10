@@ -49,6 +49,24 @@ export const criarReserva = async (reservaData) => {
     }
 };
 
+export const criarReservaAdmin = async (reservaData) => {
+    try {
+        const response = await api.post("/reservas/admin", reservaData);
+
+        // Emitir evento para todos os clientes conectados após criar a reserva
+        emitirEvento("atualizarReservas", {
+            mensagem: "Nova reserva criada",
+            reserva: response.data,
+        });
+
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error.response?.data?.mensagem || "Erro ao criar reserva"
+        );
+    }
+};
+
 export const buscarReservasSemana = async (quadraId) => {
     try {
         const response = await api.get("/reservas/semana", {

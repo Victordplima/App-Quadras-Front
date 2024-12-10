@@ -4,6 +4,7 @@ import CarouselQuadras from "../../components/CarrosselQuadras/CarrosselQuadras"
 import TabelaHorarios from "../../components/Admin/TabelaHorarios";
 import TabelaAgendamentos from "../../components/Admin/TabelaAgendamentos";
 import Header from "../../components/Admin/Header";
+import CriarReserva from "../../components/Admin/CriarReserva";
 
 const Container = styled.div`
     padding: 20px;
@@ -31,6 +32,7 @@ function TelaInicioAdmin() {
                     agendamentos={agendamentos}
                 />
             )}
+            <CriarReserva/>
             <TabelaAgendamentos
                 quadraId={quadraId}
                 setAgendamentos={setAgendamentos}
