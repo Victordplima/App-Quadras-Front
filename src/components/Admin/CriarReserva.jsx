@@ -21,6 +21,7 @@ const Button = styled.button`
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
     &:hover {
         background-color: #177491;

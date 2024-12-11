@@ -11,15 +11,16 @@ const CardContainer = styled(motion.div)`
     background-color: ${({ isSelected }) =>
         isSelected
             ? "#1e99c0"
-            : "#181444"}; /* Cor de fundo altera conforme o estado */
+            : "#181444"};
     border-radius: 10px;
     width: 100%;
     max-width: 300px;
     flex: 1;
-    transition: background-color 0.3s ease; /* Transição suave na alteração da cor de fundo */
+    transition: background-color 0.3s ease;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
     &:hover {
-        background-color: #2d3f6d; /* Cor de fundo no hover */
+        background-color: #2d3f6d;
     }
 `;
 
