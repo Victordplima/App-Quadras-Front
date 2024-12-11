@@ -63,14 +63,13 @@ const ButtonConfirmar = styled.button`
 
 const ModalConfirmacao = ({ reserva, onClose, onReservaCancelada }) => {
     const handleOverlayClick = (e) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && typeof onClose === "function") {
             onClose();
         }
     };
 
     const handleConfirmarCancelamento = async () => {
         try {
-            console.log(reserva.id)
             await cancelarReserva(reserva.id);
             toast.success("Reserva cancelada com sucesso!");
             onClose();
@@ -81,12 +80,27 @@ const ModalConfirmacao = ({ reserva, onClose, onReservaCancelada }) => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const options = {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        };
+        return date.toLocaleDateString("pt-BR", options);
+    };
+
     return (
         <ModalOverlay onClick={handleOverlayClick}>
             <ModalContent>
                 <h3>Tem certeza que deseja cancelar?</h3>
                 <p>Quadra: {reserva.quadra_nome}</p>
-                <p>Data e Hora: {reserva.data_agendada}</p>
+                <p>
+                    Data e Hora: {formatDate(reserva.data)} |{" "}
+                    {reserva.hora_inicio} até {reserva.hora_fim}
+                </p>
                 <Buttons>
                     <ButtonCancelar onClick={onClose}>Cancelar</ButtonCancelar>
                     <ButtonConfirmar onClick={handleConfirmarCancelamento}>

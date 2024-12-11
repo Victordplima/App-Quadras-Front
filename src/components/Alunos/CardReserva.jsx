@@ -257,8 +257,9 @@ const CardReserva = ({ reserva }) => {
             <AnimatePresence>
                 {isModalOpen && (
                     <ModalConfirmacao
-                        reservaId={reserva.id}
+                        reserva={reserva}
                         setModalOpen={setModalOpen}
+                        onClose={() => setModalOpen(false)}
                     />
                 )}
             </AnimatePresence>
