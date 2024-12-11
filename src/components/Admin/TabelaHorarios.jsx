@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { buscarReservasSemana } from "../../api/reserva";
 import { buscarUsuarioPorId } from "../../api/usuario";
-import socket from "../../api/socket"; // Importe o cliente WebSocket configurado
+import socket from "../../api/socket";
 
 const Tabela = styled.table`
     width: 100%;
@@ -23,12 +23,19 @@ const CelulaTabela = styled.td`
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
-    background-color: ${({ $ocupada }) => ($ocupada ? "#28a745" : "white")};
+    background-color: ${({ $status }) => {
+        if ($status === "Aula") return "#f0ad4e";
+        if ($status === "Confirmada") return "#28a745";
+        return "white";
+    }};
     cursor: default;
 
     &:hover {
-        background-color: ${({ $ocupada }) =>
-            $ocupada ? "#218838" : "#f3f3f3"};
+        background-color: ${({ $status }) => {
+            if ($status === "Aula") return "#f39c12";
+            if ($status === "Confirmada") return "#218838";
+            return "#f3f3f3";
+        }};
     }
 `;
 
@@ -82,18 +89,15 @@ const TabelaHorarios = ({ quadraId }) => {
 
         try {
             const reservas = await buscarReservasSemana(quadraId);
-            const reservasConfirmadas = reservas.filter(
-                (reserva) => reserva.status === "Confirmada"
+            const reservasFiltradas = reservas.filter(
+                (reserva) =>
+                    reserva.status === "Confirmada" || reserva.status === "Aula"
             );
 
-            const usuariosPromises = reservasConfirmadas.map(
-                async (reserva) => {
-                    const usuario = await buscarUsuarioPorId(
-                        reserva.usuario_id
-                    );
-                    return { ...reserva, nomeUsuario: usuario.nome };
-                }
-            );
+            const usuariosPromises = reservasFiltradas.map(async (reserva) => {
+                const usuario = await buscarUsuarioPorId(reserva.usuario_id);
+                return { ...reserva, nomeUsuario: usuario.nome };
+            });
 
             const reservasComUsuarios = await Promise.all(usuariosPromises);
 
@@ -101,7 +105,10 @@ const TabelaHorarios = ({ quadraId }) => {
                 (acc, reserva) => {
                     const dia = formatarDiaDaSemana(reserva.data);
                     const chave = `${dia}-${reserva.hora_inicio.slice(0, 5)}`;
-                    acc[chave] = reserva.nomeUsuario;
+                    acc[chave] = {
+                        nomeUsuario: reserva.nomeUsuario,
+                        status: reserva.status,
+                    };
                     return acc;
                 },
                 {}
@@ -182,12 +189,16 @@ const TabelaHorarios = ({ quadraId }) => {
                         <CelulaHora>{horario}</CelulaHora>
                         {diasDaSemana.map((dia) => {
                             const chave = `${dia}-${horario}`;
-                            const nomeUsuario = horariosReservados[chave];
-                            const ocupada = !!nomeUsuario;
+                            const reserva = horariosReservados[chave];
+                            // eslint-disable-next-line
+                            const ocupada = reserva
+                                ? !!reserva.nomeUsuario
+                                : false;
+                            const status = reserva ? reserva.status : null;
 
                             return (
-                                <CelulaTabela key={chave} $ocupada={ocupada}>
-                                    {nomeUsuario || ""}
+                                <CelulaTabela key={chave} $status={status}>
+                                    {reserva ? reserva.nomeUsuario : ""}
                                 </CelulaTabela>
                             );
                         })}

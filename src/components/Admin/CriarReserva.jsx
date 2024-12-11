@@ -153,11 +153,10 @@ function CriarReserva() {
         }));
     };
 
-    // Função para calcular e definir a hora de fim
     const handleHoraInicioChange = (e) => {
         const { value } = e.target;
         setReservaData((prevData) => {
-            const horaFim = horarios.find((hora) => hora > value); // Hora de fim automaticamente
+            const horaFim = horarios.find((hora) => hora > value);
             return {
                 ...prevData,
                 horaInicio: value,
@@ -281,7 +280,6 @@ function CriarReserva() {
                             ))}
                         </Select>
 
-                        {/* Exibe a hora de fim como um campo não editável */}
                         {reservaData.horaFim && (
                             <HoraFimLabel>
                                 Hora de fim: {reservaData.horaFim}
