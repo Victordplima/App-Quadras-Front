@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import socket from "../../api/socket";
 import MiniPerfilUsuario from "./MiniPerfilUsuario";
 
+// Estilos (sem alteração)
 const TableContainer = styled.div`
     margin-top: 30px;
 `;
@@ -21,6 +22,16 @@ const Th = styled.th`
     border-bottom: 1px solid #ddd;
     background-color: #181444;
     color: white;
+    cursor: pointer;
+
+    // Estilo para indicar a ordenação
+    &.sorted-asc::after {
+        content: " ↑";
+    }
+
+    &.sorted-desc::after {
+        content: " ↓";
+    }
 `;
 
 const Td = styled.td`
@@ -65,6 +76,10 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     const [perfilAberto, setPerfilAberto] = useState(false);
     const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [orderConfig, setOrderConfig] = useState({
+        column: "matricula",
+        direction: "asc",
+    });
     const tbodyRef = useRef(null);
     // eslint-disable-next-line
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -87,7 +102,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
 
     const fetchAgendamentos = useCallback(async () => {
         setLoading(true);
-        // Salvar a posição do scroll antes de fazer a requisição
         const currentScrollPosition = tbodyRef.current.scrollTop;
         setScrollPosition(currentScrollPosition);
 
@@ -99,7 +113,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
             console.error("Erro ao buscar agendamentos:", error);
         } finally {
             setLoading(false);
-            // Restaurar a posição do scroll após a atualização
             tbodyRef.current.scrollTop = currentScrollPosition;
         }
     }, [quadraId, setAgendamentos]);
@@ -124,7 +137,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
     }, [fetchAgendamentos]);
 
     const handleStatusUpdate = async (reservaId, novoStatus) => {
-        // Salvar a posição do scroll antes de atualizar os agendamentos
         const currentScrollPosition = tbodyRef.current.scrollTop;
         setScrollPosition(currentScrollPosition);
 
@@ -142,7 +154,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
             console.error("Erro ao atualizar status:", error.message);
             toast.error("Erro ao atualizar status da reserva.");
         } finally {
-            // Restaurar a posição do scroll após a atualização
             tbodyRef.current.scrollTop = currentScrollPosition;
         }
     };
@@ -157,17 +168,81 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         setUsuarioSelecionado(null);
     };
 
+    // Função para ordenar os agendamentos
+    const sortAgendamentos = (column) => {
+        const newDirection =
+            orderConfig.column === column && orderConfig.direction === "asc"
+                ? "desc"
+                : "asc";
+        const sortedAgendamentos = [...agendamentos].sort((a, b) => {
+            const valA = a[column];
+            const valB = b[column];
+
+            if (valA < valB) return newDirection === "asc" ? -1 : 1;
+            if (valA > valB) return newDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+
+        setOrderConfig({ column, direction: newDirection });
+        setAgendamentosLocal(sortedAgendamentos);
+    };
+
     return (
         <>
             <TableContainer>
                 <Table>
                     <thead>
                         <tr>
-                            <Th>Matrícula</Th>
-                            <Th>Nome do Aluno</Th>
-                            <Th>Curso</Th>
-                            <Th>Horário de uso</Th>
-                            <Th>Data/hora do pedido</Th>
+                            <Th
+                                className={
+                                    orderConfig.column === "matricula"
+                                        ? `sorted-${orderConfig.direction}`
+                                        : ""
+                                }
+                                onClick={() => sortAgendamentos("matricula")}
+                            >
+                                Matrícula
+                            </Th>
+                            <Th
+                                className={
+                                    orderConfig.column === "usuario_nome"
+                                        ? `sorted-${orderConfig.direction}`
+                                        : ""
+                                }
+                                onClick={() => sortAgendamentos("usuario_nome")}
+                            >
+                                Nome do Aluno
+                            </Th>
+                            <Th
+                                className={
+                                    orderConfig.column === "curso"
+                                        ? `sorted-${orderConfig.direction}`
+                                        : ""
+                                }
+                                onClick={() => sortAgendamentos("curso")}
+                            >
+                                Curso
+                            </Th>
+                            <Th
+                                className={
+                                    orderConfig.column === "hora_inicio"
+                                        ? `sorted-${orderConfig.direction}`
+                                        : ""
+                                }
+                                onClick={() => sortAgendamentos("hora_inicio")}
+                            >
+                                Horário de uso
+                            </Th>
+                            <Th
+                                className={
+                                    orderConfig.column === "hora_criacao"
+                                        ? `sorted-${orderConfig.direction}`
+                                        : ""
+                                }
+                                onClick={() => sortAgendamentos("hora_criacao")}
+                            >
+                                Data/hora do pedido
+                            </Th>
                             <Th>Status</Th>
                             <Th>Ações</Th>
                         </tr>
