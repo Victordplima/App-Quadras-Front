@@ -68,6 +68,7 @@ const SupervisaoAgendamentos = () => {
         const fetchReservas = async () => {
             try {
                 const reservasData = await buscarReservasDiaSemOcorrencia();
+                console.log(reservasData)
                 setReservas(reservasData);
             } catch (error) {
                 console.error("Erro ao buscar as reservas:", error);
@@ -85,7 +86,7 @@ const SupervisaoAgendamentos = () => {
     const esperandoConfirmacao = reservas.filter((reserva) => {
         const reservaDateTime = getDateTime(reserva.data, reserva.hora_inicio);
         return (
-            reserva.status === "Aguardando confirmação" &&
+            reserva.status === "Confirmada" &&
             reservaDateTime < new Date()
         );
     });
@@ -93,7 +94,7 @@ const SupervisaoAgendamentos = () => {
     const proximosAgendamentos = reservas.filter((reserva) => {
         const reservaDateTime = getDateTime(reserva.data, reserva.hora_inicio);
         return (
-            reserva.status === "Aguardando confirmação" &&
+            reserva.status === "Confirmada" &&
             reservaDateTime >= new Date()
         );
     });
