@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { buscarAgendamentosDia } from "../../api/reserva";
+import socket from "../../api/socket";
 
 const HoursContainer = styled.div`
     display: flex;
@@ -43,66 +44,77 @@ const HorarioCard = ({ selectedQuadra, selectedDay, setSelectedTime }) => {
     const [error, setError] = useState(null);
     const [selectedHora, setSelectedHora] = useState(null);
 
-    const horariosDisponiveis = [
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-        "17:00",
-        "18:00",
-        "19:00",
-        "20:00",
-    ];
+    const fetchHorarios = useCallback(async () => {
+        const horariosDisponiveis = [
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00",
+            "20:00",
+        ];
+
+        if (selectedQuadra && selectedDay) {
+            const formattedDate = selectedDay.toISOString().split("T")[0]; // YYYY-MM-DD
+            setLoading(true);
+            setError(null);
+
+            try {
+                const reservas = await buscarAgendamentosDia(
+                    selectedQuadra,
+                    formattedDate
+                );
+
+                const horariosAtualizados = horariosDisponiveis.map((hora) => {
+                    const ocupado = reservas.some((reserva) => {
+                        if (
+                            reserva.hora_inicio &&
+                            reserva.hora_inicio.includes(":")
+                        ) {
+                            const horaReserva = reserva.hora_inicio.slice(0, 5); // pega a parte da hora: MM:SS
+                            // Verificar se o status da reserva não é "Cancelada" ou "Rejeitada"
+                            const statusValido =
+                                reserva.status !== "Cancelada" &&
+                                reserva.status !== "Rejeitada";
+                            return horaReserva === hora && statusValido; // compare as horas no formato HH:MM
+                        }
+                        return false;
+                    });
+
+                    return {
+                        hora,
+                        ocupado,
+                    };
+                });
+
+                setHorarios(horariosAtualizados);
+            } catch (err) {
+                console.error("Erro ao buscar horários:", err);
+                setError("Erro ao buscar horários.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    }, [selectedQuadra, selectedDay]);
 
     useEffect(() => {
-        const fetchHorarios = async () => {
-            if (selectedQuadra && selectedDay) {
-                const formattedDate = selectedDay.toISOString().split("T")[0]; // YYYY-MM-DD
-                setLoading(true);
-                setError(null);
-
-                try {
-                    const reservas = await buscarAgendamentosDia(
-                        selectedQuadra,
-                        formattedDate
-                    );
-
-                    const horariosAtualizados = horariosDisponiveis.map(
-                        (hora) => {
-
-                            const ocupado = reservas.some((reserva) => {
-                                if (
-                                    reserva.hora_inicio &&
-                                    reserva.hora_inicio.includes(":")
-                                ) {
-                                    const horaReserva =
-                                        reserva.hora_inicio.slice(0, 5); // pega a parte da hora: MM:SS
-                                    return horaReserva === hora; // compare as horas no formato HH:MM
-                                }
-                                return false;
-                            });
-
-                            return {
-                                hora,
-                                ocupado,
-                            };
-                        }
-                    );
-
-                    setHorarios(horariosAtualizados);
-                } catch (err) {
-                    console.error("Erro ao buscar horários:", err);
-                    setError("Erro ao buscar horários.");
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
         fetchHorarios();
-        // nao tirar esse comentario de baixo, pq se nao vai dar warning
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedQuadra, selectedDay]);
+    }, [selectedQuadra, selectedDay, fetchHorarios]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("atualizarReservas", (data) => {
+                console.log("Evento recebido via WebSocket", data);
+                fetchHorarios();
+            });
+
+            return () => {
+                socket.off("atualizarReservas");
+            };
+        }
+    }, [fetchHorarios]);
 
     if (loading) {
         return <p>Carregando horários...</p>;
