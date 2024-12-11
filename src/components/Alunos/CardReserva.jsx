@@ -209,6 +209,8 @@ const CardReserva = ({ reserva }) => {
     const nomeQuadra = reserva.quadra_nome || "Quadra desconhecida";
     const nomeUsuario = reserva.usuario_id || "Usuário desconhecido";
 
+    const isAtivo = new Date(reserva.data) > new Date();
+
     return (
         <Card status={reserva.status}>
             <ImageSection>
@@ -221,7 +223,7 @@ const CardReserva = ({ reserva }) => {
             <Content>
                 <Header>
                     <NomeQuadra>{nomeQuadra}</NomeQuadra>
-                    {(reserva.status === "Aguardando confirmação" ||
+                    {isAtivo && (reserva.status === "Aguardando confirmação" ||
                         reserva.status === "Confirmada") && (
                         <Options>
                             <FontAwesomeIcon
