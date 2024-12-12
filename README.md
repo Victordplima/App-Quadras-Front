@@ -5,6 +5,7 @@
     <a href="#sobre">Sobre</a> •
     <a href="#admin">Lado Admin</a> •
     <a href="#aluno">Lado Aluno/Atlética</a> •
+    <a href="#supervisao">Lado Supervisão</a> •
     <a href="#instalacao">Instalação</a> •
     <a href="#autor">Autor</a>
 </p>
