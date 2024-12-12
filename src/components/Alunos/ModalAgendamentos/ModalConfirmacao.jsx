@@ -50,7 +50,7 @@ const ModalConfirmacao = ({ onClose }) => (
             <ModalHeader>Seu horário foi enviado para aprovação!</ModalHeader>
             <ModalText>
                 Você pode acompanhar o processo do seu agendamento na tela
-                "Agendamentos".
+                "Histórico".
             </ModalText>
             <Button onClick={onClose}>OK</Button>
         </ModalContainer>

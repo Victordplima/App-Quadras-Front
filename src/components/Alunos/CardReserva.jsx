@@ -46,17 +46,17 @@ const getStatusColor = (status) => {
 const getStatusTagColor = (status) => {
     switch (status) {
         case "Confirmada":
-            return "#28a745";
+            return "#28a745"; // Verde
         case "Cancelada":
-            return "#6c757d";
+            return "#6c757d"; // Cinza
         case "Rejeitada":
-            return "#dc3545";
+            return "#dc3545"; // Vermelho
         case "Aguardando confirmação":
-            return "#ffc107";
+            return "#ffc107"; // Amarelo
         case "Aula":
-            return "#007bff";
+            return "#007bff"; // Azul
         default:
-            return "#000";
+            return "#000"; // Preto por padrão
     }
 };
 
@@ -159,7 +159,8 @@ const Status = styled.p`
     font-size: 0.9rem;
     font-weight: bold;
     margin-top: 10px;
-    color: ${(props) => getStatusTagColor(props.status)};
+    /* Usando style inline para garantir que a cor seja aplicada diretamente */
+    color: ${(props) => getStatusTagColor(props.status)} !important;
 `;
 
 const Footer = styled.div`
@@ -223,24 +224,27 @@ const CardReserva = ({ reserva }) => {
             <Content>
                 <Header>
                     <NomeQuadra>{nomeQuadra}</NomeQuadra>
-                    {isAtivo && (reserva.status === "Aguardando confirmação" ||
-                        reserva.status === "Confirmada") && (
-                        <Options>
-                            <FontAwesomeIcon
-                                icon={faEllipsisV}
-                                className="icon"
-                                onClick={toggleDropdown}
-                            />
-                            {isDropdownOpen && (
-                                <div className="dropdown">
-                                    <button onClick={handleCancelarReserva}>
-                                        <FontAwesomeIcon icon={faCircleMinus} />
-                                        Cancelar
-                                    </button>
-                                </div>
-                            )}
-                        </Options>
-                    )}
+                    {isAtivo &&
+                        (reserva.status === "Aguardando confirmação" ||
+                            reserva.status === "Confirmada") && (
+                            <Options>
+                                <FontAwesomeIcon
+                                    icon={faEllipsisV}
+                                    className="icon"
+                                    onClick={toggleDropdown}
+                                />
+                                {isDropdownOpen && (
+                                    <div className="dropdown">
+                                        <button onClick={handleCancelarReserva}>
+                                            <FontAwesomeIcon
+                                                icon={faCircleMinus}
+                                            />
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                )}
+                            </Options>
+                        )}
                 </Header>
 
                 <Details>
@@ -248,6 +252,7 @@ const CardReserva = ({ reserva }) => {
                     <p>
                         Horário: {reserva.hora_inicio} às {reserva.hora_fim}
                     </p>
+                    {/* Aqui a cor do texto está sendo aplicada diretamente */}
                     <Status status={reserva.status}>{reserva.status}</Status>
                 </Details>
 

@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 import socket from "../../api/socket";
 import MiniPerfilUsuario from "./MiniPerfilUsuario";
 
-// Estilos (sem alteração)
 const TableContainer = styled.div`
     margin-top: 30px;
 `;
@@ -24,7 +23,6 @@ const Th = styled.th`
     color: white;
     cursor: pointer;
 
-    // Estilo para indicar a ordenação
     &.sorted-asc::after {
         content: " ↑";
     }
@@ -60,7 +58,7 @@ const Button = styled.button`
 const LinkButton = styled.button`
     background: none;
     border: none;
-    color: blue;
+    color: #1e99c0;
     text-decoration: underline;
     cursor: pointer;
 `;
@@ -168,7 +166,6 @@ const TabelaAgendamentos = ({ quadraId, setAgendamentos }) => {
         setUsuarioSelecionado(null);
     };
 
-    // Função para ordenar os agendamentos
     const sortAgendamentos = (column) => {
         const newDirection =
             orderConfig.column === column && orderConfig.direction === "asc"

@@ -84,7 +84,8 @@ const Button = styled.button`
 
 const VerificacaoTela = () => {
     const { state } = useLocation();
-    const reserva = state?.reserva; // Reserva passada pela navegação
+    const reserva = state?.reserva;
+    console.log(reserva)
     const [status, setStatus] = useState("");
     const [problema, setProblema] = useState("");
     const navigate = useNavigate();
@@ -104,7 +105,7 @@ const VerificacaoTela = () => {
         }
 
         const ocorrenciaData = {
-            reserva_id: reserva.id, // Usando o campo 'id' da reserva
+            reserva_id: reserva.id,
             utilizacao: status,
             relato: problema || "Nenhum problema relatado.",
         };
